@@ -35,8 +35,7 @@ float random_f(in vec2 uv, in vec3 ro, in vec3 rd)
 {
     ro = vec3(int(ro.x)%10000, int(ro.y)%10000, int(ro.z)%3);
     rand_call_counter++;
-    //float rand_v = fract(sin(rand_call_counter+frame*ro.z+dot(rd.xy*uv, vec2(12.9898,78.233)*rand_compare*rd.z))*(43758.5453123+ro.x+ro.y));
-    float rand_v = fract(sin(frame+dot(uv, vec2(12.9898,78.233)))*(43758.5453123));
+    float rand_v = fract(sin(rand_call_counter+frame*ro.z+dot(rd.xy*uv, vec2(12.9898,78.233)*rand_compare*rd.z))*(43758.5453123+ro.x+ro.y));
     rand_v *= 2;
     rand_v -= 1;
     return rand_v;
