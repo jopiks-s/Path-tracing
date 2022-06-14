@@ -89,7 +89,10 @@ int main()
 			if (event.type == Event::KeyPressed)
 			{
 				if (event.key.code == Keyboard::R)
+				{
+					cout << "Start render\n";
 					render = true;
+				}
 
 				if (event.key.code == Keyboard::Escape)
 				{
@@ -155,7 +158,9 @@ int main()
 
 		shader.setUniform("samples", current_samples);
 
-		shader.setUniform("seed", rand() % 1000000);
+		shader.setUniform("seed", rand());
+		shader.setUniform("u_seed1", Vector2f(rand(), rand()));
+		shader.setUniform("u_seed2", Vector2f(rand(), rand()));
 
 		shader.setUniform("camere_origin", camere_origin);
 		shader.setUniform("camere_rotation", camere_rotation);
@@ -184,7 +189,7 @@ int main()
 			cout << "Saved: " + file_name + "\n";
 			fixed_frame_counter = 1;
 			render = false;
-			window.close();
+			//window.close();
 		}
 
 		//cout << "rendered frame: " + to_string(frame)+"\n";
