@@ -14,3 +14,5 @@ int viewport_samples = 1;
 
 Vector3f camere_origin(10, -4, 5);
 Vector3f camere_rotation(0, 0,3.14);
+
+std::string render_path = "D:\\Ainstall\\render\\";

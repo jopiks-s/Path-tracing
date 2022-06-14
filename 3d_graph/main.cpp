@@ -5,8 +5,13 @@
 #include <stdlib.h>
 #include <time.h>
 #include <algorithm>
+#include <chrono>
+#include <cstdio>
+#include <fstream>
+#include <filesystem>
 #include "ini.h"
 using namespace sf;
+using namespace std;
 
 int main()
 {
@@ -17,28 +22,23 @@ int main()
 		con_set.antialiasingLevel = 8;
 		RenderWindow window(VideoMode(w, h), "bebe", Style::Default, con_set);
 		window.setFramerateLimit(120);
-		window.setMouseCursorVisible(false);
 	#pragma endregion
-
-		std::string render_path = "D:\\Ainstall\\render\\1.png";
-		//std::cout << "Render path: ";
-		//std::cin >> render_path;
 
 	#pragma region shader
 		Shader shader;
 		if (!shader.loadFromFile("Shader.frag", Shader::Type::Fragment)) //shadertest
-			std::cout << "ERROR: LOAD SHADER\n";
+			cout << "ERROR: LOAD SHADER\n";
 		shader.setUniform("resolution", Vector2f(w, h));
 		RectangleShape filler(Vector2f(window.getSize()));
 		filler.setFillColor(Color::Cyan);
 	#pragma endregion	
 
-	//#pragma region sky
-	//	sf::Texture sky;
-	//	if (!sky.loadFromFile("sky.jpg"))
-	//		std::cout << "ERROR: LOAD SKY\n";
-	//	shader.setUniform("sky", sky);
-	//#pragma endregion
+	#pragma region sky
+		sf::Texture sky;
+		if (!sky.loadFromFile("sky.jpg"))
+			cout << "ERROR: LOAD SKY\n";
+		shader.setUniform("sky", sky);
+	#pragma endregion
 
 	shader.setUniform("max_reflect", max_reflect);
 
@@ -48,7 +48,7 @@ int main()
 	int current_samples = 1;
 
 	bool render = false;
-	bool focus = true;
+	bool focus = false;
 
 	Texture preFrame;
 	preFrame.create(w, h);
@@ -126,8 +126,8 @@ int main()
 					fly_dir.z = 0;
 			}
 		}
-
-		//render = true;
+		//if(frame > 100)
+		//	render = true;
 #pragma region camera movement
 		if (fly_dir.x != 0 || fly_dir.y != 0 || fly_dir.z != 0)
 			fixed_frame_counter = 1;
@@ -156,7 +156,8 @@ int main()
 
 		shader.setUniform("samples", current_samples);
 
-		Vector2f rand_compare(rand()%5000-2500, rand()%5000-2500);
+		//Vector2f rand_compare(rand()%5000-2500, rand()%5000-2500);
+		Vector2f rand_compare(rand() % 1000 - 500, rand() % 1000 - 500);
 		shader.setUniform("rand_compare", rand_compare);
 
 		shader.setUniform("camere_origin", camere_origin);
@@ -166,19 +167,30 @@ int main()
 		
 		shader.setUniform("preFrame", preFrame);
 #pragma endregion
-		window.draw(filler, &shader);
 
+		auto start_render = chrono::steady_clock::now();
+		window.draw(filler, &shader);
+		if(render)
+			cout << "END RENDER\n";
+		auto elapsed_time = chrono::duration_cast<chrono::seconds>(chrono::steady_clock::now() - start_render);
 		window.display();
 		preFrame.update(window);
 
 		if (render)
 		{
-			preFrame.copyToImage().saveToFile(render_path);
+			int count = 0;
+			for (const auto& file : filesystem::directory_iterator(render_path))
+				count++;
+			string file_name = render_path+to_string(count) + "_" + to_string(elapsed_time.count())+"_sec.png";
+			cout << "try to save: " + file_name+"\n";
+			preFrame.copyToImage().saveToFile(file_name);
+			cout << "Saved: " + file_name + "\n";
 			fixed_frame_counter = 1;
 			render = false;
+			window.close();
 		}
-		
-		std::cout << "rendered frame: " + std::to_string(frame)+"\n";
+
+		//cout << "rendered frame: " + to_string(frame)+"\n";
 		frame++;
 		FrameTime.restart();
 	}

@@ -22,6 +22,9 @@
     <Filter Include="Исходные файлы\onigiri">
       <UniqueIdentifier>{311459a6-fac9-4974-afbd-d28f68f84c8c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\debug">
+      <UniqueIdentifier>{04785540-89c6-4766-8d03-df812de7998f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -39,6 +42,9 @@
     <ClCompile Include="Source.cpp">
       <Filter>Исходные файлы\onigiri</Filter>
     </ClCompile>
+    <ClCompile Include="Debug.cpp">
+      <Filter>Исходные файлы\debug</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Graphic.h">
@@ -54,6 +60,9 @@
     </None>
     <None Include="OutputShader.frag">
       <Filter>Исходные файлы\onigiri</Filter>
+    </None>
+    <None Include="Debug.frag">
+      <Filter>Исходные файлы\debug</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

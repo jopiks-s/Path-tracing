@@ -100,21 +100,19 @@ vec4 castRay(inout vec3 ro, inout vec3 rd) {
 	vec2 minIt = vec2(MAX_DIST);
 	vec2 it;
 	vec3 n;
-	mat2x4 spheres[1];
-	spheres[0][0] = vec4(-1.0, 5.0, -5.5, 3.5);
-	spheres[0][1] = vec4(1.0, 0.7, 0.7, -1.5);
-	//spheres[0][0] = vec4(-1.0, 0.0, -0.01, 1.0);
-	//spheres[1][0] = vec4(0.0, 3.0, -0.01, 1.0);
-	//spheres[2][0] = vec4(1.0, -2.0, -0.01, 1.0);
-	//spheres[3][0] = vec4(3.5, -1.0, 0.5, 0.5);
-	//spheres[4][0] = vec4(-3.5, -1.0, 0.0, 0.5);
-	//spheres[5][0] = vec4(-5.5, -0.5, -0.01, 1.0);
-	//spheres[0][1] = vec4(1.0, 1.0, 1.0, -0.5);
-	//spheres[1][1] = vec4(1.0, 1.0, 1.0, 0.5);
-	//spheres[2][1] = vec4(1.0, 0.0, 0.5, 1.0);
-	//spheres[3][1] = vec4(1.0, 1.0, 1.0, -2.0);
-	//spheres[4][1] = vec4(0.5, 1.0, 0.5, -2.0);
-	//spheres[5][1] = vec4(0.5, 0.5, 0.5, 0.0);
+	mat2x4 spheres[6];
+	spheres[0][0] = vec4(-1.0, 0.0, -0.01, 1.0);
+	spheres[1][0] = vec4(0.0, 3.0, -0.01, 1.0);
+	spheres[2][0] = vec4(1.0, -2.0, -0.01, 1.0);
+	spheres[3][0] = vec4(3.5, -1.0, 0.5, 0.5);
+	spheres[4][0] = vec4(-3.5, -1.0, 0.0, 0.5);
+	spheres[5][0] = vec4(-5.5, -0.5, -0.01, 1.0);
+	spheres[0][1] = vec4(1.0, 1.0, 1.0, -0.5);
+	spheres[1][1] = vec4(1.0, 1.0, 1.0, 0.5);
+	spheres[2][1] = vec4(1.0, 0.0, 0.5, 1.0);
+	spheres[3][1] = vec4(1.0, 1.0, 1.0, -2.0);
+	spheres[4][1] = vec4(0.5, 1.0, 0.5, -2.0);
+	spheres[5][1] = vec4(0.5, 0.5, 0.5, 0.0);
 	for(int i = 0; i < spheres.length(); i++) {
 		it = sphIntersect(ro - spheres[i][0].xyz, rd, spheres[i][0].w);
 		if(it.x > 0.0 && it.x < minIt.x) {
@@ -178,7 +176,7 @@ void main() {
 	rayDirection.zx *= rot(-u_mouse.y);
 	rayDirection.xy *= rot(u_mouse.x);
 	vec3 col = vec3(0.0);
-	int samples = 1024;
+	int samples = 512;
 	for(int i = 0; i < samples; i++) {
 		col += traceRay(rayOrigin, rayDirection);
 	}
