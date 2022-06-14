@@ -16,29 +16,29 @@ using namespace std;
 int main()
 {
 	srand(time(NULL));
-	#pragma region window
-	
-		ContextSettings con_set;
-		con_set.antialiasingLevel = 8;
-		RenderWindow window(VideoMode(w, h), "bebe", Style::Default, con_set);
-		window.setFramerateLimit(120);
-	#pragma endregion
+#pragma region window
 
-	#pragma region shader
-		Shader shader;
-		if (!shader.loadFromFile("Shader.frag", Shader::Type::Fragment)) //shadertest
-			cout << "ERROR: LOAD SHADER\n";
-		shader.setUniform("resolution", Vector2f(w, h));
-		RectangleShape filler(Vector2f(window.getSize()));
-		filler.setFillColor(Color::Cyan);
-	#pragma endregion	
+	ContextSettings con_set;
+	con_set.antialiasingLevel = 8;
+	RenderWindow window(VideoMode(w, h), "bebe", Style::Default, con_set);
+	window.setFramerateLimit(120);
+#pragma endregion
 
-	#pragma region sky
-		sf::Texture sky;
-		if (!sky.loadFromFile("sky.jpg"))
-			cout << "ERROR: LOAD SKY\n";
-		shader.setUniform("sky", sky);
-	#pragma endregion
+#pragma region shader
+	Shader shader;
+	if (!shader.loadFromFile("Shader.frag", Shader::Type::Fragment)) //shadertest
+		cout << "ERROR: LOAD SHADER\n";
+	shader.setUniform("resolution", Vector2f(w, h));
+	RectangleShape filler(Vector2f(window.getSize()));
+	filler.setFillColor(Color::Cyan);
+#pragma endregion	
+
+#pragma region sky
+	sf::Texture sky;
+	if (!sky.loadFromFile("sky.jpg"))
+		cout << "ERROR: LOAD SKY\n";
+	shader.setUniform("sky", sky);
+#pragma endregion
 
 	shader.setUniform("max_reflect", max_reflect);
 
@@ -57,7 +57,7 @@ int main()
 
 	while (window.isOpen())
 	{
-		if(frame%2 == 1)
+		if (frame % 2 == 1)
 			fixed_frame_counter++;
 		Event event;
 		while (window.pollEvent(event))
@@ -74,7 +74,7 @@ int main()
 				focus = true;
 				window.setMouseCursorVisible(false);
 			}
-				
+
 			if (event.type == Event::MouseMoved && focus)
 			{
 				float difx = ((event.mouseMove.x - w / 2) / (float)w) * sensitivity;
@@ -82,7 +82,7 @@ int main()
 				camere_rotation.z += difx;
 				camere_rotation.y += dify;
 				Mouse::setPosition(Vector2i(w / 2, h / 2), window);
-				if(difx != 0 || dify != 0)
+				if (difx != 0 || dify != 0)
 					fixed_frame_counter = 1;
 			}
 			if (event.type == Event::KeyPressed)
@@ -131,7 +131,7 @@ int main()
 #pragma region camera movement
 		if (fly_dir.x != 0 || fly_dir.y != 0 || fly_dir.z != 0)
 			fixed_frame_counter = 1;
-			
+
 		int z_buff = fly_dir.z;
 		camere_origin.z += fly_dir.z * camera_speed;
 		fly_dir.z = 0;
@@ -164,13 +164,13 @@ int main()
 		shader.setUniform("camere_rotation", camere_rotation);
 
 		shader.setUniform("light_dir", light_dir);
-		
+
 		shader.setUniform("preFrame", preFrame);
 #pragma endregion
 
 		auto start_render = chrono::steady_clock::now();
 		window.draw(filler, &shader);
-		if(render)
+		if (render)
 			cout << "END RENDER\n";
 		auto elapsed_time = chrono::duration_cast<chrono::seconds>(chrono::steady_clock::now() - start_render);
 		window.display();
@@ -181,8 +181,8 @@ int main()
 			int count = 0;
 			for (const auto& file : filesystem::directory_iterator(render_path))
 				count++;
-			string file_name = render_path+to_string(count) + "_" + to_string(elapsed_time.count())+"_sec.png";
-			cout << "try to save: " + file_name+"\n";
+			string file_name = render_path + to_string(count) + "_" + to_string(elapsed_time.count()) + "_sec.png";
+			cout << "try to save: " + file_name + "\n";
 			preFrame.copyToImage().saveToFile(file_name);
 			cout << "Saved: " + file_name + "\n";
 			fixed_frame_counter = 1;
