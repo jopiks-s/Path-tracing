@@ -9,6 +9,7 @@
 #include <cstdio>
 #include <fstream>
 #include <filesystem>
+#include <bitset>
 #include "ini.h"
 using namespace sf;
 using namespace std;
@@ -34,7 +35,7 @@ int main()
 #pragma endregion	
 
 #pragma region sky
-	sf::Texture sky;
+	Texture sky;
 	if (!sky.loadFromFile("sky.jpg"))
 		cout << "ERROR: LOAD SKY\n";
 	shader.setUniform("sky", sky);
@@ -126,8 +127,6 @@ int main()
 					fly_dir.z = 0;
 			}
 		}
-		//if(frame > 100)
-		//	render = true;
 #pragma region camera movement
 		if (fly_dir.x != 0 || fly_dir.y != 0 || fly_dir.z != 0)
 			fixed_frame_counter = 1;
@@ -156,9 +155,7 @@ int main()
 
 		shader.setUniform("samples", current_samples);
 
-		//Vector2f rand_compare(rand()%5000-2500, rand()%5000-2500);
-		Vector2f rand_compare(rand() % 1000 - 500, rand() % 1000 - 500);
-		shader.setUniform("rand_compare", rand_compare);
+		shader.setUniform("seed", rand());
 
 		shader.setUniform("camere_origin", camere_origin);
 		shader.setUniform("camere_rotation", camere_rotation);
