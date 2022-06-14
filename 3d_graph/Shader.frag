@@ -5,7 +5,8 @@ float aspect_ratio = resolution.x / resolution.y;
 uniform int frame;
 uniform int fixed_frame_counter;
 uniform bool render;
-uniform vec2 rand_compare;
+
+uniform int seed;
 
 uniform sampler2D preFrame;
 
@@ -21,7 +22,7 @@ uniform sampler2D sky;
 
 ///////////////////////////////////////////////
 const int object_amount = 7;
-int rand_call_counter = 0;
+int copy_seed = seed;
 
 float Length(in vec3 v) { return sqrt(v.x * v.x + v.y * v.y + v.z * v.z); }
 
@@ -31,22 +32,22 @@ float clamp(in float val, in float minv = 0, in float maxv = 1) { return max(min
 
 vec3 clamp(in vec3 vec, in float minv = 0, in float maxv = 1) { return vec3(clamp(vec.x, minv, maxv), clamp(vec.y, minv, maxv), clamp(vec.z, minv, maxv)); }
 
-float random_f(in vec2 uv, in vec3 ro, in vec3 rd)
+float random_f()
 {
-	ro = vec3(int(ro.x) % 10000, int(ro.y) % 10000, int(ro.z) % 3);
-	rand_call_counter++;
-	float rand_v = fract(sin(rand_call_counter + frame * ro.z + dot(rd.xy * uv, vec2(12.9898, 78.233) * rand_compare * rd.z)) * (43758.5453123 + ro.x + ro.y));
-	rand_v *= 2;
-	rand_v -= 1;
-	return rand_v;
+	uvec2 pixel_shift = uvec2(int(gl_FragCoord.x) % 10, int(gl_FragCoord.y) % 10);
+    copy_seed^= (copy_seed<< 13 + int(pixel_shift.x));
+    copy_seed^= (copy_seed>> 17 - int(pixel_shift.y));    
+    copy_seed^= (copy_seed<< 5);
+	copy_seed %= 1000000;
+    return (copy_seed / 1000000.0) * 2 - 1;
 }
-vec3 random_v3(in vec2 uv, in vec3 ro, in vec3 rd)
+vec3 random_v3()
 {
 	bool correct = false;
 	vec3 ret;
 	while (!correct)
 	{
-		ret = vec3(random_f(uv, ro, rd), random_f(uv, ro, rd), random_f(uv, ro, rd));
+		ret = vec3(random_f(), random_f(), random_f());
 		if (Length(ret) < 1.0)
 			correct = true;
 	}
@@ -215,7 +216,7 @@ vec3 castRay(in vec3 ro, in vec3 rd, in Object obj[object_amount], in vec2 uv)
 		vec3 roX = ro + rd * (obj[min].distance.x + 0.00001);
 		vec3 roY_far = ro + rd * (obj[min].distance.y + 0.00001);
 
-		float random = (random_f(uv, ro, rd) + 1) / 2;
+		float random = random_f();
 		float reflect_chance;
 		if (obj[min].mat.Refraction == 1)
 			reflect_chance = 100;
@@ -225,7 +226,7 @@ vec3 castRay(in vec3 ro, in vec3 rd, in Object obj[object_amount], in vec2 uv)
 		{
 			ro = roX;
 
-			vec3 random_rd = Normalize(random_v3(uv, ro, rd));
+			vec3 random_rd = random_v3();
 			random_rd = Normalize(random_rd * dot(obj[min].normal, random_rd));
 
 			vec3 specular_rd = reflect(rd, obj[min].normal);
@@ -239,7 +240,7 @@ vec3 castRay(in vec3 ro, in vec3 rd, in Object obj[object_amount], in vec2 uv)
 			vec3 refract_rd = refract(rd, obj[min].normal, obj[min].mat.Refraction);
 
 			obj[min].CalculateObjectGraphic(roY_far, -refract_rd);
-			vec3 random_rd = Normalize(random_v3(uv, ro, rd));
+			vec3 random_rd = random_v3();
 			random_rd *= Normalize(random_rd * dot(obj[min].normal, random_rd));
 
 			rd = Normalize(mix(refract_rd, random_rd, obj[min].mat.Roughness));
