@@ -155,7 +155,7 @@ int main()
 
 		shader.setUniform("samples", current_samples);
 
-		shader.setUniform("seed", rand());
+		shader.setUniform("seed", rand() % 1000000);
 
 		shader.setUniform("camere_origin", camere_origin);
 		shader.setUniform("camere_rotation", camere_rotation);
