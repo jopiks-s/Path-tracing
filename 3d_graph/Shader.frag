@@ -23,6 +23,7 @@ uniform sampler2D sky;
 ///////////////////////////////////////////////
 const int object_amount = 7;
 int copy_seed = seed;
+int rand_counter = 5;
 
 float Length(in vec3 v) { return sqrt(v.x * v.x + v.y * v.y + v.z * v.z); }
 
@@ -32,14 +33,31 @@ float clamp(in float val, in float minv = 0, in float maxv = 1) { return max(min
 
 vec3 clamp(in vec3 vec, in float minv = 0, in float maxv = 1) { return vec3(clamp(vec.x, minv, maxv), clamp(vec.y, minv, maxv), clamp(vec.z, minv, maxv)); }
 
+float sin_trasform(int x)
+{
+	return fract(sin(dot(vec2(x + gl_FragCoord.x, -x - gl_FragCoord.y), vec2(12.9898, 78.233))) * 100000.5453);
+}
+
 float random_f()
 {
-	uvec2 pixel_shift = uvec2(int(gl_FragCoord.x) % 10, int(gl_FragCoord.y) % 10);
-    copy_seed^= (copy_seed<< 13 + int(pixel_shift.x));
-    copy_seed^= (copy_seed>> 17 - int(pixel_shift.y));    
+	int shift_x = int(gl_FragCoord.x) % 20 - 10;
+	int shift_y = int(gl_FragCoord.y) % 20 - 10;
+	int random_sin = int(sin_trasform(rand_counter)*10)+1;
+
+	copy_seed+= (copy_seed<< 10);
+	copy_seed^= (copy_seed<< 13 + shift_x);
+	copy_seed+= (copy_seed<< 3);
+    copy_seed^= (copy_seed>> 17 + shift_y);    
     copy_seed^= (copy_seed<< 5);
-	copy_seed %= 1000000;
-    return (copy_seed / 1000000.0) * 2 - 1;
+	copy_seed+= (copy_seed>> 3);
+	copy_seed+= (copy_seed>> random_sin);
+
+	rand_counter+= rand_counter ^ copy_seed;
+	rand_counter^= rand_counter << 3;
+	rand_counter+= rand_counter ^ copy_seed << 10;
+	rand_counter^= rand_counter << 3;
+
+    return ((copy_seed % 1000000) / 1000000.0) * 2 - 1;
 }
 vec3 random_v3()
 {
