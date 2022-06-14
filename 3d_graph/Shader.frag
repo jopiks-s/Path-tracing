@@ -213,7 +213,7 @@ vec3 castRay(in vec3 ro, in vec3 rd, in Object obj[object_amount], in vec2 uv)
         color*=obj[min].mat.color;
 
         vec3 roX = ro + rd * (obj[min].distance.x+0.00001);
-        vec3 roY_far = ro + rd * (obj[min].distance.y+0.0001);
+        vec3 roY_far = ro + rd * (obj[min].distance.y+0.00001);
 
         float random = (random_f(uv, ro, rd) + 1)/2;
         float reflect_chance;
