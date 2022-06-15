@@ -1,4 +1,3 @@
-#version 130
 uniform vec2 resolution;
 float aspect_ratio = resolution.x / resolution.y;
 
@@ -19,6 +18,7 @@ uniform int sun_size;
 uniform int max_reflect;
 uniform int samples;
 uniform int render_samples;
+uniform int render_frame;
 
 uniform sampler2D sky;
 
@@ -285,7 +285,12 @@ void main()
 	vec3 pre_col = texture(preFrame, gl_FragCoord.xy / resolution).rgb;
 
 	if (render)
-		gl_FragColor = vec4(pre_col + curr_col/float(render_samples), 1);
+	{
+		if(render_frame++ != render_samples)
+			gl_FragColor = vec4(pre_col + curr_col/2.0, 1);
+		else
+			gl_FragColor = vec4((pre_col + curr_col/2.0)/(render_samples/2.0), 1);
+	}
 	else
 	{
 		vec3 mix_col = mix(pre_col, curr_col, 1.0 / fixed_frame_counter);
