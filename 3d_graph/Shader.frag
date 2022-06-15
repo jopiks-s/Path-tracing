@@ -18,6 +18,7 @@ uniform int sun_size;
 
 uniform int max_reflect;
 uniform int samples;
+uniform int render_samples;
 
 uniform sampler2D sky;
 
@@ -239,7 +240,7 @@ vec3 castRay(in vec3 ro, in vec3 rd, in Object obj[object_amount], in vec2 uv)
 		}
 		else													   // else refract
 		{
-			vec3 roY_far = ro + rd * (obj[min].distance.y + 1);
+			vec3 roY_far = ro + rd * (obj[min].distance.y + 10);
 			ro += rd * obj[min].distance.y + obj[min].normal*0.001;
 
 			vec3 refract_rd = refract(rd, obj[min].normal, obj[min].mat.Refraction);
@@ -264,7 +265,7 @@ vec3 MultiTrace(in vec2 uv, in vec3 rd)
 	obj[3] = Object(2, vec3(0.0), 1, Material(0, vec3(0.3, 0.4, 0.1), 0.9, 0, 1), vec3(0, 0, 1), vec2(0.0));			//plane
 	obj[4] = Object(0, vec3(3, 5, 7), 2.5, Material(1, vec3(1, 1, 1), 1, 0, 1), vec3(0.0), vec2(0.0));					//lamp
 	obj[5] = Object(0, vec3(-10, -3, 6.5), 2.5, Material(1, vec3(1, 1, 1), 1, 0, 1), vec3(0.0), vec2(0.0));				//lamp
-	obj[6] = Object(0, vec3(10, 5, 2), 1.5, Material(0, vec3(0.7, 0.7, 0.7), 0, 0, 0.74), vec3(0.0), vec2(0.0));	//sphere
+	obj[6] = Object(0, vec3(10, 5, 2), 1.5, Material(0, vec3(0.7, 0.7, 0.7), 0, 0.1, 0.74), vec3(0.0), vec2(0.0));	//sphere
 	for (int i = 0; i < obj.length(); i++)
 		obj[i].color_ini();
 
@@ -281,13 +282,14 @@ void main()
 	vec3 rd = Rotate(vec3(1, uv), camere_rotation);
 
 	vec3 curr_col = MultiTrace(uv, rd);
-	if (!render)
-	{
-		vec3 pre_col = texture(preFrame, gl_FragCoord.xy / resolution).rgb;
-		vec3 mix_col = mix(pre_col, curr_col, 1.0 / fixed_frame_counter);
+	vec3 pre_col = texture(preFrame, gl_FragCoord.xy / resolution).rgb;
 
+	if (render)
+		gl_FragColor = vec4(pre_col + curr_col/float(render_samples), 1);
+	else
+	{
+		vec3 mix_col = mix(pre_col, curr_col, 1.0 / fixed_frame_counter);
 		gl_FragColor = vec4(mix_col, 1);
 	}
-	else
-		gl_FragColor = vec4(curr_col, 1);
+		
 }
