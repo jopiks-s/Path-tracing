@@ -18,6 +18,7 @@ extern Vector3f camere_rotation;
 extern float camera_speed;
 
 extern Vector3f light_dir;
+extern int sun_size;
 
 extern int max_reflect;
 extern int samples;

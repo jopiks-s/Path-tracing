@@ -42,6 +42,7 @@ int main()
 #pragma endregion
 
 	shader.setUniform("max_reflect", max_reflect);
+	shader.setUniform("sun_size", sun_size);
 
 	Clock FrameTime;
 	int frame = 0;
@@ -158,9 +159,7 @@ int main()
 
 		shader.setUniform("samples", current_samples);
 
-		shader.setUniform("seed", rand());
-		shader.setUniform("u_seed1", Vector2f(rand(), rand()));
-		shader.setUniform("u_seed2", Vector2f(rand(), rand()));
+		shader.setUniform("seed", Vector2f(rand(), rand()));
 
 		shader.setUniform("camere_origin", camere_origin);
 		shader.setUniform("camere_rotation", camere_rotation);
