@@ -10,7 +10,7 @@ Vector3f light_dir = Graphic::Normalize(Vector3f(0.6, 0.75, -1.0));
 int sun_size = 8;
 
 int max_reflect = 32;
-int render_samples = 4096;
+int render_samples = 64;
 int viewport_samples = 4;
 
 Vector3f camere_origin(0,0, 50);

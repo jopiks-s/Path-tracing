@@ -94,8 +94,9 @@ int main()
 				{
 					cout << "Start render:\n";
 					render = true;
-					preFrame = Texture();
-					preFrame.create(w, h);
+					Image black = Image();
+					black.create(w, h, Color::Black);
+					preFrame.update(black);
 				}
 
 				if (event.key.code == Keyboard::Escape)
@@ -173,6 +174,7 @@ int main()
 		else
 			current_samples = 1;
 
+		shader.setUniform("render", render);
 		shader.setUniform("samples", current_samples);
 		shader.setUniform("render_samples", render_samples);
 
@@ -186,9 +188,7 @@ int main()
 		shader.setUniform("preFrame", preFrame);
 #pragma endregion
 
-		auto start_render = chrono::steady_clock::now();
 		window.draw(filler, &shader);
-		auto elapsed_time = chrono::duration_cast<chrono::seconds>(chrono::steady_clock::now() - start_render);
 		window.display();
 		preFrame.update(window);
 
@@ -196,25 +196,25 @@ int main()
 		{
 			render_frame++;
 			cout << render_frame << " sample--\n";
-			if (render_frame != render_samples)
-				continue;
 
-			//end rendre =>
-			cout << "Render done!\n";
+			if (render_frame == render_samples)
+			{
+				cout << "Render done!\n";
 
-			int count = 0;
-			for (const auto& file : filesystem::directory_iterator(render_path))
-				count++;
-			string file_name = render_path + to_string(count) + "_" + to_string(elapsed_time.count()) + "_sec.png"; // !!!!!!!!!!!!!!fix elapsed time
-			cout << "try to save: " + file_name + "\n";
-			if (preFrame.copyToImage().saveToFile(file_name))		//current state of preFrame is last render
-				cout << "Saved: " + file_name + "\n";
-			else
-				cout << "Can't save to this path: " + file_name + "\n";
+				int count = 0;
+				for (const auto& file : filesystem::directory_iterator(render_path))
+					count++;
+				string file_name = render_path + to_string(count) + ".png"; // !!!!!!!!!!!!!!fix elapsed time
+				cout << "try to save: " << file_name << "\n";
+				if (preFrame.copyToImage().saveToFile(file_name))		//current state of [preFrame] is last render
+					cout << "Saved: " + file_name + "\n";
+				else
+					cout << "Can't save to this path: " + file_name + "\n";
 
-			render_frame = 0;
-			fixed_frame_counter = 1;
-			render = false;
+				render_frame = 0;
+				fixed_frame_counter = 1;
+				render = false;
+			}
 		}
 
 		frame++;
