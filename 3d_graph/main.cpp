@@ -46,6 +46,7 @@ int main()
 
 	Clock FrameTime;
 	int frame = 0;
+	int render_frame = 0;
 	int fixed_frame_counter = 1;
 	int current_samples = 1;
 
@@ -77,7 +78,7 @@ int main()
 				window.setMouseCursorVisible(false);
 			}
 
-			if (event.type == Event::MouseMoved && focus)
+			if (event.type == Event::MouseMoved && focus && !render)
 			{
 				float difx = ((event.mouseMove.x - w / 2) / (float)w) * sensitivity;
 				float dify = ((event.mouseMove.y - h / 2) / (float)h) * sensitivity;
@@ -91,8 +92,10 @@ int main()
 			{
 				if (event.key.code == Keyboard::R)
 				{
-					cout << "Start render\n";
+					cout << "Start render:\n";
 					render = true;
+					preFrame = Texture();
+					preFrame.create(w, h);
 				}
 
 				if (event.key.code == Keyboard::Escape)
@@ -100,8 +103,15 @@ int main()
 					focus = false;
 					window.setMouseCursorVisible(true);
 				}
+
+				if (render)
+				{
+					fly_dir = Vector3f(0, 0, 0);
+					continue;
+				}
 				if (!focus)
 					continue;
+
 				if (event.key.code == Keyboard::W)
 					fly_dir.x = 1;
 				if (event.key.code == Keyboard::S)
@@ -115,6 +125,7 @@ int main()
 				if (event.key.code == Keyboard::LShift)
 					fly_dir.z = -1;
 			}
+
 			if (event.type == Event::KeyReleased)
 			{
 				if (event.key.code == Keyboard::W)
@@ -133,17 +144,19 @@ int main()
 		}
 #pragma region camera movement
 		if (fly_dir.x != 0 || fly_dir.y != 0 || fly_dir.z != 0)
+		{
 			fixed_frame_counter = 1;
+			int z_buff = fly_dir.z;
+			camere_origin.z += fly_dir.z * camera_speed;
+			fly_dir.z = 0;
+			Vector3f buff_v = Graphic::Normalize(fly_dir);
+			buff_v = Graphic::Rotate(buff_v, camere_rotation);
+			camere_origin.x += buff_v.x * camera_speed;
+			camere_origin.y += buff_v.y * camera_speed;
+			camere_origin.z += buff_v.z * camera_speed;
+			fly_dir.z = z_buff;
+		}
 
-		int z_buff = fly_dir.z;
-		camere_origin.z += fly_dir.z * camera_speed;
-		fly_dir.z = 0;
-		Vector3f buff_v = Graphic::Normalize(fly_dir);
-		buff_v = Graphic::Rotate(buff_v, camere_rotation);
-		camere_origin.x += buff_v.x * camera_speed;
-		camere_origin.y += buff_v.y * camera_speed;
-		camere_origin.z += buff_v.z * camera_speed;
-		fly_dir.z = z_buff;
 #pragma endregion
 
 #pragma region shader unifroms
@@ -151,13 +164,17 @@ int main()
 		shader.setUniform("fixed_frame_counter", fixed_frame_counter);
 
 		if (render)
-			current_samples = samples;
-		else if (fixed_frame_counter < 10)
 			current_samples = 1;
+		else if(focus)
+			if (fixed_frame_counter < 10)
+				current_samples = 1;
+			else
+				current_samples = viewport_samples;
 		else
-			current_samples = viewport_samples;
+			current_samples = 1;
 
 		shader.setUniform("samples", current_samples);
+		shader.setUniform("render_samples", render_samples);
 
 		shader.setUniform("seed", Vector2f(rand(), rand()));
 
@@ -171,27 +188,35 @@ int main()
 
 		auto start_render = chrono::steady_clock::now();
 		window.draw(filler, &shader);
-		if (render)
-			cout << "END RENDER\n";
 		auto elapsed_time = chrono::duration_cast<chrono::seconds>(chrono::steady_clock::now() - start_render);
 		window.display();
 		preFrame.update(window);
 
 		if (render)
 		{
+			render_frame++;
+			cout << render_frame << " sample--\n";
+			if (render_frame != render_samples)
+				continue;
+
+			//end rendre =>
+			cout << "Render done!\n";
+
 			int count = 0;
 			for (const auto& file : filesystem::directory_iterator(render_path))
 				count++;
-			string file_name = render_path + to_string(count) + "_" + to_string(elapsed_time.count()) + "_sec.png";
+			string file_name = render_path + to_string(count) + "_" + to_string(elapsed_time.count()) + "_sec.png"; // !!!!!!!!!!!!!!fix elapsed time
 			cout << "try to save: " + file_name + "\n";
-			preFrame.copyToImage().saveToFile(file_name);
-			cout << "Saved: " + file_name + "\n";
+			if (preFrame.copyToImage().saveToFile(file_name))		//current state of preFrame is last render
+				cout << "Saved: " + file_name + "\n";
+			else
+				cout << "Can't save to this path: " + file_name + "\n";
+
+			render_frame = 0;
 			fixed_frame_counter = 1;
 			render = false;
-			//window.close();
 		}
 
-		//cout << "rendered frame: " + to_string(frame)+"\n";
 		frame++;
 		FrameTime.restart();
 	}

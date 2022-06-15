@@ -21,7 +21,7 @@ extern Vector3f light_dir;
 extern int sun_size;
 
 extern int max_reflect;
-extern int samples;
+extern int render_samples;
 extern int viewport_samples;
 
 extern std::string render_path;
