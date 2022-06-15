@@ -21,51 +21,9 @@ uniform int samples;
 uniform sampler2D sky;
 
 ///////////////////////////////////////////////
-const int object_amount = 8;
-
-uniform vec2 u_seed1;
-uniform vec2 u_seed2;
-uvec4 R_STATE;
-
-uint TausStep(uint z, int S1, int S2, int S3, uint M)
-{
-	uint b = (((z << S1) ^ z) >> S2);
-	return (((z & M) << S3) ^ b);
-}
-
-uint LCGStep(uint z, uint A, uint C)
-{
-	return (A * z + C);
-}
-
-vec2 hash22(vec2 p)
-{
-	p += u_seed1.x;
-	vec3 p3 = fract(vec3(p.xyx) * vec3(.1031, .1030, .0973));
-	p3 += dot(p3, p3.yzx+33.33);
-	return fract((p3.xx+p3.yz)*p3.zy);
-}
-
-float random()
-{
-	R_STATE.x = TausStep(R_STATE.x, 13, 19, 12, uint(4294967294));
-	R_STATE.y = TausStep(R_STATE.y, 2, 25, 4, uint(4294967288));
-	R_STATE.z = TausStep(R_STATE.z, 3, 11, 17, uint(4294967280));
-	R_STATE.w = LCGStep(R_STATE.w, uint(1664525), uint(1013904223));
-	return 2.3283064365387e-10 * float((R_STATE.x ^ R_STATE.y ^ R_STATE.z ^ R_STATE.w));
-}
-
-vec3 randomOnSphere() {
-	vec3 rand = vec3(random(), random(), random());
-	float theta = rand.x * 2.0 * 3.14159265;
-	float v = rand.y;
-	float phi = acos(2.0 * v - 1.0);
-	float r = pow(rand.z, 1.0 / 3.0);
-	float x = r * sin(phi) * cos(theta);
-	float y = r * sin(phi) * sin(theta);
-	float z = r * cos(phi);
-	return vec3(x, y, z);
-}
+const int object_amount = 1;
+int copy_seed = seed;
+int rand_counter = 5;
 
 float Length(in vec3 v) { return sqrt(v.x * v.x + v.y * v.y + v.z * v.z); }
 
@@ -78,6 +36,39 @@ vec3 clamp(in vec3 vec, in float minv = 0, in float maxv = 1) { return vec3(clam
 float sin_trasform(int x)
 {
 	return fract(sin(dot(vec2(x, -x), vec2(12.9898, 78.233))) * 43758.5453);
+}
+
+float random_f()
+{
+	int shift_x = int(gl_FragCoord.x) % 20 - 10;
+	int shift_y = int(gl_FragCoord.y) % 20 - 10;
+
+	copy_seed+= (copy_seed<< 10);
+	copy_seed^= (copy_seed<< 13 + shift_x);
+	copy_seed+= (copy_seed<< 3);
+    copy_seed^= (copy_seed>> 17 + shift_y);    
+    copy_seed^= (copy_seed<< 5);
+
+	//rand_counter+= rand_counter ^ copy_seed;
+	//rand_counter^= rand_counter << 3;
+	//rand_counter+= rand_counter ^ (copy_seed >> 7);
+	//rand_counter^= rand_counter << 3;
+
+	//copy_seed+= (copy_seed>> rand_counter);
+
+    return ((copy_seed % 1000000) / 1000000.0) * 2 - 1;
+}
+vec3 random_v3()
+{
+	bool correct = false;
+	vec3 ret;
+	while (!correct)
+	{
+		ret = vec3(random_f(), random_f(), random_f());
+		if (Length(ret) < 1.0)
+			correct = true;
+	}
+	return ret;
 }
 
 vec3 color_correction(in vec3 col) { return clamp(vec3(pow(col.r, 0.45), pow(col.g, 0.45), pow(col.b, 0.45))); }
@@ -239,7 +230,7 @@ vec3 castRay(in vec3 ro, in vec3 rd, in Object obj[object_amount], in vec2 uv)
 
 		color *= obj[min].mat.color;
 
-		float random = random();
+		float random = random_f();
 		float reflect_chance;
 		if (obj[min].mat.Refraction == 1)
 			reflect_chance = 100;
@@ -249,7 +240,7 @@ vec3 castRay(in vec3 ro, in vec3 rd, in Object obj[object_amount], in vec2 uv)
 		{
 			ro += rd * (obj[min].distance.x + 0.0000001);
 
-			vec3 random_rd = randomOnSphere();
+			vec3 random_rd = random_v3();
 			random_rd = Normalize(random_rd * dot(obj[min].normal, random_rd));
 
 			vec3 specular_rd = reflect(rd, obj[min].normal);
@@ -259,12 +250,12 @@ vec3 castRay(in vec3 ro, in vec3 rd, in Object obj[object_amount], in vec2 uv)
 		else													   // else refract
 		{
 			vec3 roY_far = ro + rd * (obj[min].distance.y + 1);
-			ro += rd * (obj[min].distance.y - 0.00001);
+			ro += rd * (obj[min].distance.y - 0.0000001);
 
 			vec3 refract_rd = refract(rd, obj[min].normal, obj[min].mat.Refraction);
 
 			obj[min].CalculateObjectGraphic(roY_far, -refract_rd);
-			vec3 random_rd = randomOnSphere();
+			vec3 random_rd = random_v3();
 			random_rd *= Normalize(random_rd * dot(obj[min].normal, random_rd));
 
 			rd = Normalize(mix(refract_rd, random_rd, obj[min].mat.Roughness));
@@ -278,12 +269,12 @@ vec3 MultiTrace(in vec2 uv, in vec3 rd)
 {
 	Object obj[object_amount];
 	obj[0] = Object(2, vec3(0.0), 1, Material(0, vec3(0.3, 0.4, 0.1), 0.9, 0, 1), vec3(0, 0, 1), vec2(0.0));			//plane
-	obj[1] = Object(1, vec3(-5, 3, 4), 2.5, Material(0, vec3(0.3, 0.1, 0.3), 0.8, 0, 1), vec3(0.0), vec2(0.0));			//cub
-	obj[2] = Object(1, vec3(-15, 7, 2), 2.5, Material(0, vec3(0.1, 1, 0), 0.7, 0, 1), vec3(0.0), vec2(0.0));			//cub
-	obj[4] = Object(0, vec3(3, 5, 7), 2.5, Material(1, vec3(1, 1, 1), 1, 0, 1), vec3(0.0), vec2(0.0));					//lamp
-	obj[5] = Object(0, vec3(-10, -3, 6.5), 2.5, Material(1, vec3(1, 1, 1), 1, 0, 1), vec3(0.0), vec2(0.0));				//lamp
-	obj[6] = Object(0, vec3(10, 5, 2), 1.5, Material(0, vec3(0.5, 0.5, 0.5), 0.01, 0.1, 0.74), vec3(0.0), vec2(0.0));	//sphere
-	obj[7] = Object(0, vec3(3, 10, 0.5), 1.5, Material(0, vec3(1.0, 0.2, 0.2), 0.2, 0, 1), vec3(0.0), vec2(0.0));		//sphere
+	//obj[0] = Object(0, vec3(3, 10, 0.5), 1.5, Material(0, vec3(1.0, 0.2, 0.2), 0.2, 0, 1), vec3(0.0), vec2(0.0));		//sphere
+	//obj[1] = Object(1, vec3(-5, 3, 4), 2.5, Material(0, vec3(0.3, 0.1, 0.3), 0.8, 0, 1), vec3(0.0), vec2(0.0));			//cub
+	//obj[2] = Object(1, vec3(-15, 7, 2), 2.5, Material(0, vec3(0.1, 1, 0), 0.7, 0, 1), vec3(0.0), vec2(0.0));			//cub
+	//obj[4] = Object(0, vec3(3, 5, 7), 2.5, Material(1, vec3(1, 1, 1), 1, 0, 1), vec3(0.0), vec2(0.0));					//lamp
+	//obj[5] = Object(0, vec3(-10, -3, 6.5), 2.5, Material(1, vec3(1, 1, 1), 1, 0, 1), vec3(0.0), vec2(0.0));				//lamp
+	//obj[6] = Object(0, vec3(10, 5, 2), 1.5, Material(0, vec3(0.5, 0.5, 0.5), 0.01, 0.1, 0.74), vec3(0.0), vec2(0.0));	//sphere
 	for (int i = 0; i < obj.length(); i++)
 		obj[i].color_ini();
 
@@ -296,15 +287,7 @@ vec3 MultiTrace(in vec2 uv, in vec3 rd)
 void main()
 {
 	vec2 uv = gl_FragCoord.xy / resolution - 0.5;
-
-	vec2 uvRes = hash22(uv + 1.0) * resolution + resolution;
-	R_STATE.x = uint(u_seed1.x + uvRes.x);
-	R_STATE.y = uint(u_seed1.y + uvRes.x);
-	R_STATE.z = uint(u_seed2.x + uvRes.y);
-	R_STATE.w = uint(u_seed2.y + uvRes.y);
-
 	uv.x *= aspect_ratio;
-
 	vec3 rd = Rotate(vec3(1, uv), camere_rotation);
 
 	vec3 curr_col = MultiTrace(uv, rd);
