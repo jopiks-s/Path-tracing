@@ -9,7 +9,7 @@ Vector3f light_dir = Graphic::Normalize(Vector3f(0.6, 0.75, -1.0));
 int sun_size = 8;
 
 int max_reflect = 32;
-int render_samples = 64;
+int render_samples = 512;
 int viewport_samples = 4;
 
 std::string render_path = "D:\\Ainstall\\render\\";

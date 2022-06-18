@@ -35,7 +35,7 @@ vec3 clamp(in vec3 vec, in float minv = 0, in float maxv = 1) { return vec3(clam
 float random_f(in vec2 uv, in vec3 ro, in vec3 rd, in bool full_range = true)
 {
 	ro = vec3(int(ro.x) % 10000, int(ro.y) % 10000, int(ro.z) % 3);
-	rand_counter++;
+	rand_counter+= seed.x;
 	float rand_v = fract(sin(rand_counter + frame * ro.z + dot(rd.xy * uv, vec2(12.9898, 78.233) * seed * rd.z)) * (43758.5453123 + ro.x + ro.y));
 	if(full_range)
 	{
