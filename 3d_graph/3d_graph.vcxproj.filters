@@ -5,10 +5,6 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Файлы заголовков">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
     <Filter Include="Файлы ресурсов">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
@@ -19,18 +15,24 @@
     <Filter Include="Исходные файлы\Initializations">
       <UniqueIdentifier>{59ba5fb3-b7c7-4394-ac00-d81ca7fbaf22}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Исходные файлы\onigiri">
-      <UniqueIdentifier>{311459a6-fac9-4974-afbd-d28f68f84c8c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Исходные файлы\debug">
       <UniqueIdentifier>{04785540-89c6-4766-8d03-df812de7998f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\debug\onigiri">
+      <UniqueIdentifier>{311459a6-fac9-4974-afbd-d28f68f84c8c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Scene">
+      <UniqueIdentifier>{1b9a647a-a521-49fb-8442-66edc4b93e8f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Scene\Math">
+      <UniqueIdentifier>{049b6227-4948-4bd1-923d-a4e32a24f944}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Scene\Camera">
+      <UniqueIdentifier>{650559d0-537e-4c2d-a089-b7b5acddbb45}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="Graphic.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="ini.h">
@@ -40,16 +42,17 @@
       <Filter>Исходные файлы\Initializations</Filter>
     </ClCompile>
     <ClCompile Include="Source.cpp">
-      <Filter>Исходные файлы\onigiri</Filter>
+      <Filter>Исходные файлы\debug\onigiri</Filter>
     </ClCompile>
     <ClCompile Include="Debug.cpp">
       <Filter>Исходные файлы\debug</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Graphic.h">
-      <Filter>Исходные файлы</Filter>
-    </ClInclude>
+    <ClCompile Include="Graphic.cpp">
+      <Filter>Исходные файлы\Scene\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Исходные файлы\Scene\Camera</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader.frag">
@@ -59,7 +62,7 @@
       <Filter>Исходные файлы\Shaders</Filter>
     </None>
     <None Include="OutputShader.frag">
-      <Filter>Исходные файлы\onigiri</Filter>
+      <Filter>Исходные файлы\debug\onigiri</Filter>
     </None>
     <None Include="Debug.frag">
       <Filter>Исходные файлы\debug</Filter>
@@ -69,5 +72,13 @@
     <Image Include="sky.jpg">
       <Filter>Файлы ресурсов</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Graphic.h">
+      <Filter>Исходные файлы\Scene\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Исходные файлы\Scene\Camera</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

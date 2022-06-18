@@ -5,17 +5,15 @@
 #include <stdlib.h>
 #include <time.h>
 #include <algorithm>
+#include "Camera.h"
 
 #pragma once
 
 using namespace sf;
 
 extern int w, h;
-extern float sensitivity;
 
-extern Vector3f camere_origin;
-extern Vector3f camere_rotation;
-extern float camera_speed;
+extern Camera camera;
 
 extern Vector3f light_dir;
 extern int sun_size;

@@ -7,18 +7,15 @@ uniform bool render;
 
 uniform vec2 seed;
 
-uniform sampler2D preFrame;
-
-uniform vec3 camere_origin;
-uniform vec3 camere_rotation;
+uniform vec3 camera_origin;
+uniform vec3 camera_rotation;
 
 uniform vec3 light_dir;
 uniform int sun_size;
 
+uniform sampler2D preFrame;
 uniform int max_reflect;
 uniform int samples;
-uniform int render_samples;
-uniform int render_frame;
 
 uniform sampler2D sky;
 
@@ -271,7 +268,7 @@ vec3 MultiTrace(in vec2 uv, in vec3 rd)
 
 	vec3 col;
 	for (int i = 0; i < samples; i++)
-		col += castRay(camere_origin, rd, obj, uv);
+		col += castRay(camera_origin, rd, obj, uv);
 	return col / samples;
 }
 
@@ -279,22 +276,16 @@ void main()
 {
 	vec2 uv = gl_FragCoord.xy / resolution - 0.5;
 	uv.x *= aspect_ratio;
-	vec3 rd = Rotate(vec3(1, uv), camere_rotation);
+	vec3 rd = Rotate(vec3(1, uv), camera_rotation);
 
 	vec3 curr_col = MultiTrace(uv, rd);
-	vec3 pre_col = texture(preFrame, gl_FragCoord.xy / resolution).rgb;
 
 	if (render)
-	{
-		if(render_frame++ != render_samples)
-			gl_FragColor = vec4(pre_col + curr_col/2.0, 1);
-		else
-			gl_FragColor = vec4((pre_col + curr_col/2.0)/(render_samples/2.0), 1);
-	}
+		gl_FragColor = vec4(curr_col, 1);
 	else
 	{
+		vec3 pre_col = texture(preFrame, gl_FragCoord.xy / resolution).rgb;	
 		vec3 mix_col = mix(pre_col, curr_col, 1.0 / fixed_frame_counter);
 		gl_FragColor = vec4(mix_col, 1);
 	}
-		
 }
