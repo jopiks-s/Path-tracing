@@ -161,14 +161,14 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Debug.cpp" />
     <ClCompile Include="Graphic.cpp" />
-    <ClCompile Include="ini.cpp" />
-    <ClCompile Include="ini.h" />
+    <ClCompile Include="Ini.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Graphic.h" />
+    <ClInclude Include="Ini.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Debug.frag" />

@@ -1,25 +1,25 @@
-#include <SFML/Graphics.hpp>
-#include <cmath>
-#include "Graphic.h"
-#include <iostream>
-#include <stdlib.h>
-#include <time.h>
-#include <algorithm>
-#include "Camera.h"
-
 #pragma once
 
+#include <SFML/Graphics.hpp>
+#include "Graphic.h"
+
 using namespace sf;
+using namespace std;
 
-extern int w, h;
+class Ini
+{
+public:
+	int w, h;
 
-extern Camera camera;
+	Vector3f light_dir;
+	int sun_size;
 
-extern Vector3f light_dir;
-extern int sun_size;
+	int max_reflect;
+	int render_samples;
+	int viewport_samples;
 
-extern int max_reflect;
-extern int render_samples;
-extern int viewport_samples;
+	string render_path;
 
-extern std::string render_path;
+	Ini(int w, int h, Vector3f light_dir, int sun_siz, int max_reflect,
+		int render_samples, int viewport_samples, string render_parth);
+};

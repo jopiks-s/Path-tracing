@@ -11,7 +11,7 @@
 #include <filesystem>
 #include <bitset>
 #include "Camera.h"
-#include "ini.h"
+#include "Ini.h"
 
 using namespace sf;
 using namespace std;
@@ -20,11 +20,15 @@ using ImageAccurate = vector<vector<Vector3<double>>>;
 int main()
 {
 	srand(time(NULL));
+
+	Ini setup(1200, 800, Vector3f(0.6, 0.75, -1.0), 8, 32, 256, 4, "D:/Ainstall/render/");
+	Camera camera(0.5, 0.3, Vector3f(0, 10, 5), Vector3f(0, 0, 0));
+
 #pragma region window
 
 	ContextSettings con_set;
 	con_set.antialiasingLevel = 8;
-	RenderWindow window(VideoMode(w, h), "bebe", Style::Default, con_set);
+	RenderWindow window(VideoMode(setup.w, setup.h), "bebe", Style::Default, con_set);
 	window.setFramerateLimit(120);
 #pragma endregion
 
@@ -32,7 +36,7 @@ int main()
 	Shader shader;
 	if (!shader.loadFromFile("Shader.frag", Shader::Type::Fragment)) //shadertest
 		cout << "ERROR: LOAD SHADER\n";
-	shader.setUniform("resolution", Vector2f(w, h));
+	shader.setUniform("resolution", Vector2f(setup.w, setup.h));
 	RectangleShape filler(Vector2f(window.getSize()));
 	filler.setFillColor(Color::Cyan);
 #pragma endregion	
@@ -44,20 +48,21 @@ int main()
 	shader.setUniform("sky", sky);
 #pragma endregion
 
-	shader.setUniform("max_reflect", max_reflect);
-	shader.setUniform("sun_size", sun_size);
+
+	shader.setUniform("max_reflect", setup.max_reflect);
+	shader.setUniform("sun_size", setup.sun_size);
 
 	Clock FrameTime;
 	int frame = 0, render_frame = 0, fixed_frame_counter = 1;
 	int current_samples = 0;
 
-	ImageAccurate render_dump(h, vector<Vector3<double>>(w, Vector3<double>(0,0,0)));
+	ImageAccurate render_dump(setup.h, vector<Vector3<double>>(setup.w, Vector3<double>(0,0,0)));
 
 	bool render = false;
 	bool focus = false;
 
 	Texture preFrame;
-	preFrame.create(w, h);
+	preFrame.create(setup.w, setup.h);
 
 	while (window.isOpen())
 	{
@@ -85,7 +90,7 @@ int main()
 
 			if (event.type == Event::MouseMoved && focus && !render)
 			{
-				if (camera.RotateCamera(event, window))
+				if (camera.RotateCamera(event, window, setup))
 					fixed_frame_counter = 1;
 			}
 
@@ -121,7 +126,7 @@ int main()
 			if (fixed_frame_counter < 10)
 				current_samples = 1;
 			else
-				current_samples = viewport_samples;
+				current_samples = setup.viewport_samples;
 		else
 			current_samples = 1;
 
@@ -133,7 +138,7 @@ int main()
 		shader.setUniform("camera_origin", camera.camera_origin);
 		shader.setUniform("camera_rotation", camera.camera_rotation);
 
-		shader.setUniform("light_dir", light_dir);
+		shader.setUniform("light_dir", setup.light_dir);
 
 		shader.setUniform("preFrame", preFrame);
 #pragma endregion
@@ -144,22 +149,22 @@ int main()
 
 		if (render)
 		{
-			Graphic::RenderApproximate(render_dump, preFrame.copyToImage(), render_samples, w, h);
+			Graphic::RenderApproximate(render_dump, preFrame.copyToImage(), setup);
 			render_frame++;
 			cout << render_frame << " sample--\n";
 
-			if (render_frame == render_samples)
+			if (render_frame == setup.render_samples)
 			{
 				cout << "Render done!\n";
 
 				int count = 0;
-				for (const auto& file : filesystem::directory_iterator(render_path))
+				for (const auto& file : filesystem::directory_iterator(setup.render_path))
 					count++;
-				string file_name = render_path + to_string(count) + ".png"; // !!!!!!!!!!!!!!fix elapsed time
+				string file_name = setup.render_path + to_string(count) + ".png"; // !!!!!!!!!!!!!!fix elapsed time
 
 				cout << "try to save: " << file_name << "\n";
 
-				Image render_output = Graphic::VectorToImage(render_dump, w, h);
+				Image render_output = Graphic::VectorToImage(render_dump, setup);
 
 				if (render_output.saveToFile(file_name))		//current state of [preFrame] is last render
 					cout << "Saved: " + file_name + "\n";
@@ -170,6 +175,7 @@ int main()
 				fixed_frame_counter = 1;
 				render = false;
 				camera.Enable();
+				render_dump = ImageAccurate(setup.h, vector<Vector3<double>>(setup.w, Vector3<double>(0, 0, 0)));
 			}
 		}
 

@@ -1,10 +1,9 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "Graphic.h"
+#include "Ini.h"
 
 using namespace sf;
-
-extern int w, h;
 
 class Camera
 {
@@ -23,7 +22,7 @@ public:
 		fly_dir(0,0,0), disable(disable)
 	{}
 
-	bool RotateCamera(const Event& e, const RenderWindow& window);
+	bool RotateCamera(const Event& e, const RenderWindow& window, const Ini& setup);
 	bool MoveCamera();
 
 	void KeyboardInputRecord(const Event& e);

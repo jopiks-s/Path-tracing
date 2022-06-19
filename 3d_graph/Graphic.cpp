@@ -1,4 +1,5 @@
 #include "Graphic.h"
+#include "Ini.h"
 
 using ImageAccurate = vector<vector<Vector3<double>>>;
 
@@ -45,35 +46,32 @@ Vector3f Graphic::Mix(const Vector3f& v1, const Vector3f& v2, const float& perce
 	return Vector3f(v1.x + diff.x * percent, v1.y + diff.y * percent, v1.z + diff.z * percent);;
 }
 
-ImageAccurate Graphic::RenderApproximate(ImageAccurate& dump, const Image& image, int samples, int w, int h)
+ImageAccurate Graphic::RenderApproximate(ImageAccurate& dump, const Image& image, const Ini& setup)
 {
-	for (int i = 0; i < h; i++)
-		for (int j = 0; j < w; j++)
+	for (int i = 0; i < setup.h; i++)
+		for (int j = 0; j < setup.w; j++)
 		{
 			Color c = image.getPixel(j, i);
-			dump[i][j].x += int(c.r) / (double)samples;
-			dump[i][j].y += int(c.g) / (double)samples;
-			dump[i][j].z += int(c.b) / (double)samples;
+			dump[i][j].x += int(c.r) / (double)setup.render_samples;
+			dump[i][j].y += int(c.g) / (double)setup.render_samples;
+			dump[i][j].z += int(c.b) / (double)setup.render_samples;
 		}
 
 	return dump;
 }
 
-Image Graphic::VectorToImage(const ImageAccurate& dump, int w, int h)
+Image Graphic::VectorToImage(const ImageAccurate& dump, const Ini& setup)
 {
 	Image img;
-	img.create(w, h);
-	for (int i = 0; i < h; i++)
-		for (int j = 0; j < w; j++)
+	img.create(setup.w, setup.h);
+	for (int i = 0; i < setup.h; i++)
+		for (int j = 0; j < setup.w; j++)
 		{
-			Color tryc = Color(
+			img.setPixel(j, i, Color(
 				dump[i][j].x,
 				dump[i][j].y,
 				dump[i][j].z
-			);
-			img.setPixel(j, i, tryc);
-
-			//cout << "pixel " << j << " " << i << ". color: " << int(tryc.r) << "; " << int(tryc.g) << "; " << int(tryc.b) << ";\n";
+			));
 		}
 	return img;
 }
