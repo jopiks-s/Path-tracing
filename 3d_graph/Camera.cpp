@@ -1,19 +1,19 @@
 #include "Camera.h"
 
-bool Camera::RotateCamera(const Event& e, const RenderWindow& window)
+bool Camera::RotateCamera(const Event& e, const RenderWindow& window, const Ini& setup)
 {
 	if (disable)
 		return false;
 
-	float difx = ((e.mouseMove.x - w / 2) / (float)w) * sensitivity;
-	float dify = ((e.mouseMove.y - h / 2) / (float)h) * sensitivity;
+	float difx = ((e.mouseMove.x - setup.w / 2) / (float)setup.w) * sensitivity;
+	float dify = ((e.mouseMove.y - setup.h / 2) / (float)setup.h) * sensitivity;
 
 	if (difx == 0 && dify == 0)
 		return false;
 
 	camera_rotation.z += difx;
 	camera_rotation.y += dify;
-	Mouse::setPosition(Vector2i(w / 2, h / 2), window);
+	Mouse::setPosition(Vector2i(setup.w / 2, setup.h / 2), window);
 
 	return true;
 }

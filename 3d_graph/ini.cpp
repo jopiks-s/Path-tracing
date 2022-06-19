@@ -1,15 +1,7 @@
-#include "ini.h"
+#include "Ini.h"
 
-int w = 1200;
-int h = 800;
-
-Camera camera(0.5, 0.3, Vector3f(0, 10, 5), Vector3f(0, 0, 0));
-
-Vector3f light_dir = Graphic::Normalize(Vector3f(0.6, 0.75, -1.0));
-int sun_size = 8;
-
-int max_reflect = 32;
-int render_samples = 512;
-int viewport_samples = 4;
-
-std::string render_path = "D:\\Ainstall\\render\\";
+Ini::Ini(int w, int h, Vector3f light_dir, int sun_size, int max_reflect, int render_samples,
+	int viewport_samples, string render_path)
+	: w(w), h(h), light_dir(Graphic::Normalize(light_dir)), sun_size(sun_size), max_reflect(max_reflect),
+	render_samples(render_samples), viewport_samples(viewport_samples), render_path(render_path)
+{}
