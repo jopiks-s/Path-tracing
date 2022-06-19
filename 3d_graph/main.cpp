@@ -146,6 +146,7 @@ int main()
 		window.draw(filler, &shader);
 		window.display();
 		preFrame.update(window);
+		window.draw(setup.info_text["setup_t"]);
 
 		if (render)
 		{
