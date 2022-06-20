@@ -24,7 +24,7 @@ int main()
 
 	Ini setup(1200, 800, Vector3f(0.6, 0.75, -1.0), 8, 32, 128, 4, "D:/Ainstall/render/");
 	InfoOutput info_ouput("Arial.ttf");
-	Camera camera(0.5, 0.3, Vector3f(0, 10, 5), Vector3f(0, 0, 0));
+	Camera camera(0.5, 0.3, 1.5, 1, Vector3f(0, 10, 5), Vector3f(0, 0, 0));
 
 #pragma region window
 
@@ -145,6 +145,8 @@ int main()
 
 		shader.setUniform("camera_origin", camera.camera_origin);
 		shader.setUniform("camera_rotation", camera.camera_rotation);
+		shader.setUniform("focal_distance", (float)camera.focal_distance);
+		shader.setUniform("camera_size", (float)camera.camera_size);
 
 		shader.setUniform("light_dir", setup.light_dir);
 

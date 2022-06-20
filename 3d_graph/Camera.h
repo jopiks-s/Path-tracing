@@ -11,16 +11,15 @@ public:
 
 	double sensitivity;
 	double camera_speed;
+	double focal_distance;
+	double camera_size;
 	Vector3f camera_origin;
 	Vector3f camera_rotation;
 	Vector3f fly_dir;
 
 	bool disable;
 
-	Camera(double sensitivity, double camera_speed, Vector3f camera_origin, Vector3f camera_rotation, bool disable = false)
-		: sensitivity(sensitivity), camera_speed(camera_speed), camera_origin(camera_origin), camera_rotation(camera_rotation),
-		fly_dir(0,0,0), disable(disable)
-	{}
+	Camera(double sensitivity, double camera_speed, double focal_distance, double camera_size, Vector3f camera_origin, Vector3f camera_rotation, bool disable = false);
 
 	bool RotateCamera(const Event& e, const RenderWindow& window, const Ini& setup);
 	bool MoveCamera();
