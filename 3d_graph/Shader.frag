@@ -9,6 +9,8 @@ uniform vec2 seed;
 
 uniform vec3 camera_origin;
 uniform vec3 camera_rotation;
+uniform float focal_distance;
+uniform float camera_size;
 
 uniform vec3 light_dir;
 uniform int sun_size;
@@ -44,13 +46,13 @@ float random_f(in vec2 uv, in vec3 ro, in vec3 rd, in bool full_range = true)
 	}
 	return rand_v;
 }
-vec3 random_v3(in vec2 uv, in vec3 ro, in vec3 rd)
+vec3 random_v3(in vec2 uv, in vec3 ro, in vec3 rd, bool full_range = true)
 {
 	bool correct = false;
 	vec3 ret;
 	while (!correct)
 	{
-		ret = vec3(random_f(uv, ro, rd), random_f(uv, ro, rd), random_f(uv, ro, rd));
+		ret = vec3(random_f(uv, ro, rd, full_range), random_f(uv, ro, rd, full_range), random_f(uv, ro, rd, full_range));
 		if (Length(ret) < 1.0)
 			correct = true;
 	}
@@ -253,7 +255,7 @@ vec3 castRay(in vec3 ro, in vec3 rd, in Object obj[object_amount], in vec2 uv)
 	return color;
 }
 
-vec3 MultiTrace(in vec2 uv, in vec3 rd)
+vec3 MultiTrace(in vec2 uv)
 {
 	Object obj[object_amount];
 	obj[0] = Object(0, vec3(3, 10, 0.5), 1.5, Material(0, vec3(1.0, 0.2, 0.2), 0.2, 0, 1), vec3(0.0), vec2(0.0));		//sphere
@@ -266,9 +268,11 @@ vec3 MultiTrace(in vec2 uv, in vec3 rd)
 	for (int i = 0; i < obj.length(); i++)
 		obj[i].color_ini();
 
+	vec3 matrix_origin = Rotate(camera_origin + vec3(0, uv * camera_size), camera_rotation);
+	vec3 rd = (camera_origin + Rotate(vec3(1, 0, 0), camera_rotation)*focal_distance) - matrix_origin; 
 	vec3 col;
 	for (int i = 0; i < samples; i++)
-		col += castRay(camera_origin, rd, obj, uv);
+		col += castRay(matrix_origin, rd, obj, uv);
 	return col / samples;
 }
 
@@ -276,9 +280,9 @@ void main()
 {
 	vec2 uv = gl_FragCoord.xy / resolution - 0.5;
 	uv.x *= aspect_ratio;
-	vec3 rd = Rotate(vec3(1, uv), camera_rotation);
+	//vec3 rd = Rotate(Normalize(vec3(1, uv)), camera_rotation);
 
-	vec3 curr_col = MultiTrace(uv, rd);
+	vec3 curr_col = MultiTrace(uv);
 
 	if (render)
 		gl_FragColor = vec4(curr_col, 1);
