@@ -33,6 +33,9 @@
     <Filter Include="Исходные файлы\Shaders\GLSL">
       <UniqueIdentifier>{b09982a5-3149-4e49-9256-4952569f40d3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\Scene\Screen">
+      <UniqueIdentifier>{326f872d-ae15-4360-944b-292c5c2d9974}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -52,6 +55,9 @@
     </ClCompile>
     <ClCompile Include="Ini.cpp">
       <Filter>Исходные файлы\Initializations</Filter>
+    </ClCompile>
+    <ClCompile Include="InfoOutput.cpp">
+      <Filter>Исходные файлы\Scene\Screen</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -82,6 +88,9 @@
     </ClInclude>
     <ClInclude Include="Ini.h">
       <Filter>Исходные файлы\Initializations</Filter>
+    </ClInclude>
+    <ClInclude Include="InfoOutput.h">
+      <Filter>Исходные файлы\Scene\Screen</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
