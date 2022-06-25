@@ -1,8 +1,6 @@
 #include "Graphic.h"
 #include "Ini.h"
 
-using ImageAccurate = vector<vector<Vector3<double>>>;
-
 float Graphic::Length(const Vector3f& vec)
 {
 	return sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
@@ -52,9 +50,9 @@ ImageAccurate Graphic::RenderApproximate(ImageAccurate& dump, const Image& image
 		for (int j = 0; j < setup.w; j++)
 		{
 			Color c = image.getPixel(j, i);
-			dump[i][j].x += int(c.r) / (double)setup.render_samples;
-			dump[i][j].y += int(c.g) / (double)setup.render_samples;
-			dump[i][j].z += int(c.b) / (double)setup.render_samples;
+			dump[i][j].x += int(c.r) / (long double)setup.render_samples;
+			dump[i][j].y += int(c.g) / (long double)setup.render_samples;
+			dump[i][j].z += int(c.b) / (long double)setup.render_samples;
 		}
 
 	return dump;
