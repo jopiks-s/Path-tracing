@@ -24,17 +24,23 @@
     <Filter Include="Исходные файлы\Scene">
       <UniqueIdentifier>{1b9a647a-a521-49fb-8442-66edc4b93e8f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Исходные файлы\Scene\Math">
-      <UniqueIdentifier>{049b6227-4948-4bd1-923d-a4e32a24f944}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Исходные файлы\Scene\Camera">
       <UniqueIdentifier>{650559d0-537e-4c2d-a089-b7b5acddbb45}</UniqueIdentifier>
     </Filter>
     <Filter Include="Исходные файлы\Shaders\GLSL">
       <UniqueIdentifier>{b09982a5-3149-4e49-9256-4952569f40d3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Исходные файлы\Scene\Screen">
+    <Filter Include="Исходные файлы\Sfml Extenstion">
+      <UniqueIdentifier>{9a696cef-474e-4d3c-bfe4-3d01628933e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Scene\Graphic">
+      <UniqueIdentifier>{049b6227-4948-4bd1-923d-a4e32a24f944}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Scene\InfoOutput">
       <UniqueIdentifier>{326f872d-ae15-4360-944b-292c5c2d9974}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Scene\Render">
+      <UniqueIdentifier>{bf438159-ec50-43c1-bcc9-93dd485ccdad}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -48,7 +54,7 @@
       <Filter>Исходные файлы\debug</Filter>
     </ClCompile>
     <ClCompile Include="Graphic.cpp">
-      <Filter>Исходные файлы\Scene\Math</Filter>
+      <Filter>Исходные файлы\Scene\Graphic</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Исходные файлы\Scene\Camera</Filter>
@@ -57,7 +63,13 @@
       <Filter>Исходные файлы\Initializations</Filter>
     </ClCompile>
     <ClCompile Include="InfoOutput.cpp">
-      <Filter>Исходные файлы\Scene\Screen</Filter>
+      <Filter>Исходные файлы\Scene\InfoOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="sfml_extension.cpp">
+      <Filter>Исходные файлы\Sfml Extenstion</Filter>
+    </ClCompile>
+    <ClCompile Include="Render.cpp">
+      <Filter>Исходные файлы\Scene\Render</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -81,7 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Graphic.h">
-      <Filter>Исходные файлы\Scene\Math</Filter>
+      <Filter>Исходные файлы\Scene\Graphic</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>Исходные файлы\Scene\Camera</Filter>
@@ -90,7 +102,13 @@
       <Filter>Исходные файлы\Initializations</Filter>
     </ClInclude>
     <ClInclude Include="InfoOutput.h">
-      <Filter>Исходные файлы\Scene\Screen</Filter>
+      <Filter>Исходные файлы\Scene\InfoOutput</Filter>
+    </ClInclude>
+    <ClInclude Include="sfml_extension.h">
+      <Filter>Исходные файлы\Sfml Extenstion</Filter>
+    </ClInclude>
+    <ClInclude Include="Render.h">
+      <Filter>Исходные файлы\Scene\Render</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
