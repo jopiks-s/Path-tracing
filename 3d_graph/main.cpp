@@ -25,7 +25,7 @@ int main()
 	srand(time(NULL));
 
 	Ini setup(1200, 800, Vector3f(0.6, 0.75, -1.0), 8, 32, 128, 16, "D:/Ainstall/render/");
-	InfoOutput info_ouput("Arial.ttf");
+	InfoOutput info_output("Arial.ttf");
 	Camera camera(0.5, 0.3, 1.5, 1, Vector3f(0, 10, 5), Vector3f(0, 0, 0));
 	ImageAccurate render_dump(setup.h, vector<Vector3<long double>>(setup.w, Vector3<long double>(0, 0, 0)));
 
@@ -46,8 +46,8 @@ int main()
 	int frame = 0, render_frame = 0, fixed_frame_counter = 1;
 	int current_samples = 0;
 
-	bool render = false;
-	bool focus = false;
+	bool render = false,
+		focus = false;
 
 	Texture preFrame;
 	preFrame.create(setup.w, setup.h);
@@ -110,7 +110,7 @@ int main()
 				}
 
 				if (event.key.code == Keyboard::I)
-					info_ouput.Switch();
+					info_output.Switch();
 
 				if (event.key.code == Keyboard::Escape)
 				{
@@ -157,13 +157,15 @@ int main()
 		window.draw(filler, &shader);
 		preFrame.update(window);
 
-		info_ouput.draw(window, setup);
+		info_output.draw(window, setup, camera);
 
 		if (render)
 		{
-			draw_img(window, Graphic::VectorToImage(render_dump, setup)); // create interface
+			if (!info_output.disable)
+				draw_img(window, Graphic::VectorToImage(render_dump, setup));
+
 			render_frame++;
-			info_ouput.render_draw(window, setup, render_frame, render_elapsed_time);
+			info_output.render_draw(window, setup, render_frame, render_elapsed_time);
 
 			Graphic::RenderApproximate(render_dump, preFrame.copyToImage(), setup);
 

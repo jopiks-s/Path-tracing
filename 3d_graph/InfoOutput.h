@@ -5,6 +5,7 @@
 #include <cmath>
 
 class Ini;
+class Camera;
 
 using namespace sf;
 using namespace std;
@@ -20,6 +21,6 @@ public:
 	void Disable();
 	void Enable();
 	void Switch();
-	bool draw(RenderWindow& window, const Ini& setup);
+	bool draw(RenderWindow& window, const Ini& setup, const Camera& camera);
 	bool render_draw(RenderWindow& window, const Ini& setup, int sample, const Clock& elapsed_time);
 };
