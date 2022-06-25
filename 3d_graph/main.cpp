@@ -192,7 +192,6 @@ int main()
 				render_dump = ImageAccurate(setup.h, vector<Vector3<long double>>(setup.w, Vector3<long double>(0, 0, 0)));
 			}
 		}
-
 		frame++;
 	}
 
