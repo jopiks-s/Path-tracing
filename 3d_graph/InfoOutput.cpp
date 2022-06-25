@@ -2,6 +2,7 @@
 #include "Ini.h"
 #include "Graphic.h"
 #include "sfml_extension.h"
+#include "Camera.h"
 
 InfoOutput::InfoOutput(string font_path, bool disable) : disable(disable)
 {
@@ -29,7 +30,7 @@ void InfoOutput::Switch()
 	disable = !disable;
 }
 
-bool InfoOutput::draw(RenderWindow& window, const Ini& setup)
+bool InfoOutput::draw(RenderWindow& window, const Ini& setup, const Camera& camera)
 {
 	if (disable)
 		return false;
@@ -43,8 +44,11 @@ bool InfoOutput::draw(RenderWindow& window, const Ini& setup)
 		+ "Maximum reflect : " + to_string(setup.max_reflect) + "\n"
 		+ "Viewport samples : " + to_string(setup.viewport_samples) + "\n"
 		+ "Render samples : " + to_string(setup.render_samples) + "\n"
-		+ "Render path : \"" + setup.render_path + "\""
-		+ "\n"
+		+ "Render path : \"" + setup.render_path + "\"" + "\n"
+		+ "Camera position :  x: "
+		+ to_string((int)camera.camera_origin.x) + "; y: "
+		+ to_string((int)camera.camera_origin.y) + "; z: "
+		+ to_string((int)camera.camera_origin.z) + ";" + "\n"
 		+ "\n"
 		+ "Movement: ^[W] <[A] v[S] >[D] ^^[SPACE] vv[LSHIFT]" + "\n"
 		+ "To start render: [R]" + "\n"
