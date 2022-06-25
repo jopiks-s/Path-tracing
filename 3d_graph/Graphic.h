@@ -18,9 +18,4 @@ namespace Graphic
 
 	ImageAccurate RenderApproximate(ImageAccurate& dump, const Image& image, const Ini& setup);
 	Image VectorToImage(const ImageAccurate& dump, const Ini& setup);
-
-	vector<int> FormatTime(const Time& t);
-	string TimeToString(const vector<int>& v, char delimiter = ':', bool add_unit = false);
-
-	void Print(const Vector3f& vec);
 }

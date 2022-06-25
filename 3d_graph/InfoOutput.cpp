@@ -1,6 +1,7 @@
 ﻿#include "InfoOutput.h"
 #include "Ini.h"
 #include "Graphic.h"
+#include "sfml_extension.h"
 
 InfoOutput::InfoOutput(string font_path, bool disable) : disable(disable)
 {
@@ -52,7 +53,6 @@ bool InfoOutput::draw(RenderWindow& window, const Ini& setup)
 	setup_t.setPosition(Vector2f(10, 10));
 
 	window.draw(setup_t);
-	window.display();
 
 	return true;
 }
@@ -62,7 +62,7 @@ bool InfoOutput::render_draw(RenderWindow& window, const Ini& setup, int sample,
 	if (disable)
 		return false;
 
-	auto time_str = Graphic::TimeToString(Graphic::FormatTime(elapsed_time.getElapsedTime()));
+	auto time_str = TimeToString(FormatTime(elapsed_time.getElapsedTime()));
 	cout << sample << " sample--\n";
 	cout << "Elapsed time : " << time_str << "\n";
 	Text render_t;

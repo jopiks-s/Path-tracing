@@ -164,6 +164,8 @@
     <ClCompile Include="InfoOutput.cpp" />
     <ClCompile Include="Ini.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Render.cpp" />
+    <ClCompile Include="sfml_extension.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -171,6 +173,8 @@
     <ClInclude Include="Graphic.h" />
     <ClInclude Include="InfoOutput.h" />
     <ClInclude Include="Ini.h" />
+    <ClInclude Include="Render.h" />
+    <ClInclude Include="sfml_extension.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Debug.frag" />
