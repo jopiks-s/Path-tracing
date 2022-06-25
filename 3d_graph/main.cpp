@@ -16,13 +16,13 @@
 
 using namespace sf;
 using namespace std;
-using ImageAccurate = vector<vector<Vector3<double>>>;
+using ImageAccurate = vector<vector<Vector3<long double>>>;
 
 int main()
 {
 	srand(time(NULL));
 
-	Ini setup(1200, 800, Vector3f(0.6, 0.75, -1.0), 8, 32, 128, 4, "D:/Ainstall/render/");
+	Ini setup(1200, 800, Vector3f(0.6, 0.75, -1.0), 8, 32, 4096, 16, "D:/Ainstall/render/");
 	InfoOutput info_ouput("Arial.ttf");
 	Camera camera(0.5, 0.3, 1.5, 1, Vector3f(0, 10, 5), Vector3f(0, 0, 0));
 
@@ -58,7 +58,7 @@ int main()
 	int frame = 0, render_frame = 0, fixed_frame_counter = 1;
 	int current_samples = 0;
 
-	ImageAccurate render_dump(setup.h, vector<Vector3<double>>(setup.w, Vector3<double>(0, 0, 0)));
+	ImageAccurate render_dump(setup.h, vector<Vector3<long double>>(setup.w, Vector3<long double>(0, 0, 0)));
 
 	bool render = false;
 	bool focus = false;
@@ -180,7 +180,7 @@ int main()
 
 				Image render_output = Graphic::VectorToImage(render_dump, setup);
 
-				if (render_output.saveToFile(file_name))		//current state of [preFrame] is last render
+				if (render_output.saveToFile(file_name))
 					cout << "Saved: " + file_name + "\n";
 				else
 					cout << "Can't save to this path: " + file_name + "\n";
@@ -189,7 +189,7 @@ int main()
 				fixed_frame_counter = 1;
 				render = false;
 				camera.Enable();
-				render_dump = ImageAccurate(setup.h, vector<Vector3<double>>(setup.w, Vector3<double>(0, 0, 0)));
+				render_dump = ImageAccurate(setup.h, vector<Vector3<long double>>(setup.w, Vector3<long double>(0, 0, 0)));
 			}
 		}
 

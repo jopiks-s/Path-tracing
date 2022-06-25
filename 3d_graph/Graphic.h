@@ -7,7 +7,7 @@ class Ini;
 
 using namespace sf;
 using namespace std;
-using ImageAccurate = vector<vector<Vector3<double>>>;
+using ImageAccurate = vector<vector<Vector3<long double>>>;
 
 namespace Graphic
 {
