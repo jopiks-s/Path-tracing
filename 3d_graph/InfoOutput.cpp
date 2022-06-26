@@ -1,6 +1,8 @@
 ﻿#include "InfoOutput.h"
 #include "Ini.h"
 #include "Graphic.h"
+#include "sfml_extension.h"
+#include "Camera.h"
 
 InfoOutput::InfoOutput(string font_path, bool disable) : disable(disable)
 {
@@ -28,7 +30,7 @@ void InfoOutput::Switch()
 	disable = !disable;
 }
 
-bool InfoOutput::draw(RenderWindow& window, const Ini& setup)
+bool InfoOutput::draw(RenderWindow& window, const Ini& setup, const Camera& camera)
 {
 	if (disable)
 		return false;
@@ -42,8 +44,11 @@ bool InfoOutput::draw(RenderWindow& window, const Ini& setup)
 		+ "Maximum reflect : " + to_string(setup.max_reflect) + "\n"
 		+ "Viewport samples : " + to_string(setup.viewport_samples) + "\n"
 		+ "Render samples : " + to_string(setup.render_samples) + "\n"
-		+ "Render path : \"" + setup.render_path + "\""
-		+ "\n"
+		+ "Render path : \"" + setup.render_path + "\"" + "\n"
+		+ "Camera position :  x: "
+		+ to_string((int)camera.camera_origin.x) + "; y: "
+		+ to_string((int)camera.camera_origin.y) + "; z: "
+		+ to_string((int)camera.camera_origin.z) + ";" + "\n"
 		+ "\n"
 		+ "Movement: ^[W] <[A] v[S] >[D] ^^[SPACE] vv[LSHIFT]" + "\n"
 		+ "To start render: [R]" + "\n"
@@ -52,7 +57,6 @@ bool InfoOutput::draw(RenderWindow& window, const Ini& setup)
 	setup_t.setPosition(Vector2f(10, 10));
 
 	window.draw(setup_t);
-	window.display();
 
 	return true;
 }
@@ -62,7 +66,7 @@ bool InfoOutput::render_draw(RenderWindow& window, const Ini& setup, int sample,
 	if (disable)
 		return false;
 
-	auto time_str = Graphic::TimeToString(Graphic::FormatTime(elapsed_time.getElapsedTime()));
+	auto time_str = TimeToString(FormatTime(elapsed_time.getElapsedTime()));
 	cout << sample << " sample--\n";
 	cout << "Elapsed time : " << time_str << "\n";
 	Text render_t;

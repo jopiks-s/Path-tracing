@@ -13,6 +13,8 @@
 #include "Camera.h"
 #include "Ini.h"
 #include "InfoOutput.h"
+#include "sfml_extension.h"
+#include "Render.h"
 
 using namespace sf;
 using namespace std;
@@ -22,9 +24,33 @@ int main()
 {
 	srand(time(NULL));
 
-	Ini setup(1200, 800, Vector3f(0.6, 0.75, -1.0), 8, 32, 4096, 16, "D:/Ainstall/render/");
-	InfoOutput info_ouput("Arial.ttf");
+	Ini setup(1200, 800, Vector3f(0.6, 0.75, -1.0), 8, 32, 128, 16, "D:/Ainstall/render/");
+	InfoOutput info_output("Arial.ttf");
 	Camera camera(0.5, 0.3, 1.5, 1, Vector3f(0, 10, 5), Vector3f(0, 0, 0));
+	ImageAccurate render_dump(setup.h, vector<Vector3<long double>>(setup.w, Vector3<long double>(0, 0, 0)));
+
+#pragma region shader
+	Shader shader;
+	if (!shader.loadFromFile("Shader.frag", Shader::Type::Fragment))
+		cout << "Can't load Shader.frag\n";
+
+	RectangleShape filler(Vector2f(setup.w, setup.h));
+	filler.setFillColor(Color::Cyan);
+
+	shader.setUniform("max_reflect", setup.max_reflect);
+	shader.setUniform("sun_size", setup.sun_size);
+	shader.setUniform("resolution", Vector2f(setup.w, setup.h));
+#pragma endregion
+
+	Clock render_elapsed_time;
+	int frame = 0, render_frame = 0, fixed_frame_counter = 1;
+	int current_samples = 0;
+
+	bool render = false,
+		focus = false;
+
+	Texture preFrame;
+	preFrame.create(setup.w, setup.h);
 
 #pragma region window
 
@@ -34,37 +60,12 @@ int main()
 	window.setFramerateLimit(120);
 #pragma endregion
 
-#pragma region shader
-	Shader shader;
-	if (!shader.loadFromFile("Shader.frag", Shader::Type::Fragment)) //shadertest
-		cout << "ERROR: LOAD SHADER\n";
-	shader.setUniform("resolution", Vector2f(setup.w, setup.h));
-	RectangleShape filler(Vector2f(window.getSize()));
-	filler.setFillColor(Color::Cyan);
-#pragma endregion	
-
 #pragma region sky
 	Texture sky;
 	if (!sky.loadFromFile("sky.jpg"))
 		cout << "ERROR: LOAD SKY\n";
 	shader.setUniform("sky", sky);
 #pragma endregion
-
-
-	shader.setUniform("max_reflect", setup.max_reflect);
-	shader.setUniform("sun_size", setup.sun_size);
-
-	Clock render_elapsed_time;		// actually previous frame
-	int frame = 0, render_frame = 0, fixed_frame_counter = 1;
-	int current_samples = 0;
-
-	ImageAccurate render_dump(setup.h, vector<Vector3<long double>>(setup.w, Vector3<long double>(0, 0, 0)));
-
-	bool render = false;
-	bool focus = false;
-
-	Texture preFrame;
-	preFrame.create(setup.w, setup.h);
 
 	while (window.isOpen())
 	{
@@ -109,7 +110,7 @@ int main()
 				}
 
 				if (event.key.code == Keyboard::I)
-					info_ouput.Switch();
+					info_output.Switch();
 
 				if (event.key.code == Keyboard::Escape)
 				{
@@ -154,36 +155,23 @@ int main()
 #pragma endregion
 
 		window.draw(filler, &shader);
-		window.display();
 		preFrame.update(window);
-		info_ouput.draw(window, setup);
+
+		info_output.draw(window, setup, camera);
 
 		if (render)
 		{
+			if (!info_output.disable)
+				draw_img(window, Graphic::VectorToImage(render_dump, setup));
+
 			render_frame++;
-			info_ouput.render_draw(window, setup, render_frame, render_elapsed_time);
+			info_output.render_draw(window, setup, render_frame, render_elapsed_time);
 
 			Graphic::RenderApproximate(render_dump, preFrame.copyToImage(), setup);
 
 			if (render_frame == setup.render_samples)
 			{
-				auto elapsed_time = Graphic::FormatTime(render_elapsed_time.getElapsedTime());
-				cout << "Render done!\n";
-				cout << "Elapsed time to render : "<< Graphic::TimeToString(elapsed_time) << "\n";
-
-				int count = 0;
-				for (const auto& file : filesystem::directory_iterator(setup.render_path))
-					count++;
-				string file_name = setup.render_path + to_string(count) + '_' + Graphic::TimeToString(elapsed_time, '_', true) + ".png"; // !!!!!!!!!!!!!!fix elapsed time
-
-				cout << "try to save: " << file_name << "\n";
-
-				Image render_output = Graphic::VectorToImage(render_dump, setup);
-
-				if (render_output.saveToFile(file_name))
-					cout << "Saved: " + file_name + "\n";
-				else
-					cout << "Can't save to this path: " + file_name + "\n";
+				Render::save_result(render_dump, render_elapsed_time, setup);
 
 				render_frame = 0;
 				fixed_frame_counter = 1;
@@ -193,6 +181,7 @@ int main()
 			}
 		}
 
+		window.display();
 		frame++;
 	}
 
