@@ -18,4 +18,5 @@ public:
 	Texture preFrame;
 
 	WindowProp(int w, int h);
+	void choose_samples(int viewport_samples);
 };

@@ -1,6 +1,26 @@
 #include "Render.h"
 #include "Ini.h"
 #include "sfml_extension.h"
+#include "WindowProp.h"
+#include "Camera.h"
+
+void Render::set_uniforms(Shader& shader, const WindowProp& window_prop, const Ini& setup, const Camera& camera)
+{
+	shader.setUniform("frame", window_prop.frame);
+	shader.setUniform("fixed_frame_counter", window_prop.fixed_frame_counter);
+	shader.setUniform("render", window_prop.render);
+	shader.setUniform("samples", window_prop.current_samples);
+	shader.setUniform("preFrame", window_prop.preFrame);
+
+	shader.setUniform("camera_origin", camera.camera_origin);
+	shader.setUniform("camera_rotation", camera.camera_rotation);
+	shader.setUniform("focal_distance", (float)camera.focal_distance);
+	shader.setUniform("camera_size", (float)camera.camera_size);
+
+	shader.setUniform("seed", Vector2f(rand(), rand()));
+
+	shader.setUniform("light_dir", setup.light_dir);
+}
 
 bool Render::save_result(const ImageAccurate& render_dump, const Clock render_elapsed_time, const Ini& setup)
 {

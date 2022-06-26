@@ -118,32 +118,10 @@ int main()
 			window_prop.fixed_frame_counter = 1;
 
 #pragma region shader unifroms
-		shader.setUniform("frame", window_prop.frame);
-		shader.setUniform("fixed_frame_counter", window_prop.fixed_frame_counter);
 
-		if (window_prop.render)
-			window_prop.current_samples = 1;
-		else if (window_prop.focus)
-			if (window_prop.fixed_frame_counter < 10)
-				window_prop.current_samples = 1;
-			else
-				window_prop.current_samples = setup.viewport_samples;
-		else
-			window_prop.current_samples = 1;
+		window_prop.choose_samples(setup.viewport_samples);
+		Render::set_uniforms(shader, window_prop, setup, camera);
 
-		shader.setUniform("render", window_prop.render);
-		shader.setUniform("samples", window_prop.current_samples);
-
-		shader.setUniform("seed", Vector2f(rand(), rand()));
-
-		shader.setUniform("camera_origin", camera.camera_origin);
-		shader.setUniform("camera_rotation", camera.camera_rotation);
-		shader.setUniform("focal_distance", (float)camera.focal_distance);
-		shader.setUniform("camera_size", (float)camera.camera_size);
-
-		shader.setUniform("light_dir", setup.light_dir);
-
-		shader.setUniform("preFrame", window_prop.preFrame);
 #pragma endregion
 
 		window.draw(filler, &shader);
@@ -156,7 +134,7 @@ int main()
 			if (!info_output.disable)
 				draw_img(window, Graphic::VectorToImage(render_dump, setup));
 
-			window_prop.render_frame++;
+			window_prop.render_frame += window_prop.current_samples;
 			info_output.render_draw(window, setup, window_prop.render_frame, window_prop.render_elapsed_time);
 
 			Graphic::RenderApproximate(render_dump, window_prop.preFrame.copyToImage(), setup);
