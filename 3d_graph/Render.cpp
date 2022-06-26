@@ -6,11 +6,14 @@
 
 void RenderF::set_uniforms(Shader& shader, const WindowProp& window_prop, const Ini& setup, const Render& render, const Camera& camera)
 {
+	shader.setUniform("light_dir", setup.light_dir);
+
 	shader.setUniform("frame", window_prop.frame);
+	shader.setUniform("preFrame", window_prop.preFrame);
+
 	shader.setUniform("fixed_frame_counter", window_prop.fixed_frame_counter);
 	shader.setUniform("render", render.rendering);
 	shader.setUniform("samples", render.claster_size);
-	shader.setUniform("preFrame", window_prop.preFrame);
 
 	shader.setUniform("camera_origin", camera.camera_origin);
 	shader.setUniform("camera_rotation", camera.camera_rotation);
@@ -19,7 +22,6 @@ void RenderF::set_uniforms(Shader& shader, const WindowProp& window_prop, const 
 
 	shader.setUniform("seed", Vector2f(rand(), rand()));
 
-	shader.setUniform("light_dir", setup.light_dir);
 }
 
 bool RenderF::save_result(const ImageAccurate& render_dump, const Clock render_elapsed_time, const Ini& setup)

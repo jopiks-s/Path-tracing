@@ -13,7 +13,6 @@ public:
 
 	Vector3f light_dir;
 	int sun_size;
-
 	int max_reflect;
 
 	string render_path;
