@@ -3,6 +3,7 @@
 #include "Graphic.h"
 #include "sfml_extension.h"
 #include "Camera.h"
+#include "Render.h"
 
 InfoOutput::InfoOutput(string font_path, bool disable) : disable(disable)
 {
@@ -30,7 +31,7 @@ void InfoOutput::Switch()
 	disable = !disable;
 }
 
-bool InfoOutput::draw(RenderWindow& window, const Ini& setup, const Camera& camera, int claster_size)
+bool InfoOutput::draw(RenderWindow& window, const Ini& setup, const Camera& camera, const Render& render)
 {
 	if (disable)
 		return false;
@@ -42,14 +43,14 @@ bool InfoOutput::draw(RenderWindow& window, const Ini& setup, const Camera& came
 	setup_t.setString(
 		"W : " + to_string(setup.w) + "; H : " + to_string(setup.h) + "\n"
 		+ "Maximum reflect : " + to_string(setup.max_reflect) + "\n"
-		+ "Viewport samples : " + to_string(setup.viewport_samples) + "\n"
-		+ "Render samples : " + to_string(setup.render_samples) + "\n"
+		+ "Viewport samples : " + to_string(render.viewport_samples) + "\n"
+		+ "Render samples : " + to_string(render.render_samples) + "\n"
 		+ "Render path : \"" + setup.render_path + "\"" + "\n"
 		+ "Camera position : x: "
 		+ to_string((int)camera.camera_origin.x) + "; y: "
 		+ to_string((int)camera.camera_origin.y) + "; z: "
 		+ to_string((int)camera.camera_origin.z) + ";" + "\n"
-		+ "Claster size : " + to_string(claster_size) + "\n"
+		+ "Claster size : " + to_string(render.claster_size) + "\n"
 		+ "\n"
 		+ "Movement: ^[W] <[A] v[S] >[D] ^^[SPACE] vv[LSHIFT]" + "\n"
 		+ "To start render: [R]" + "\n"

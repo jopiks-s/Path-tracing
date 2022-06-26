@@ -25,7 +25,8 @@ int main()
 {
 	srand(time(NULL));
 
-	Ini setup(1200, 800, Vector3f(0.6, 0.75, -1.0), 8, 32, 128, 16, "D:/Ainstall/render/");
+	Render render(16, 64);
+	Ini setup(1200, 800, Vector3f(0.6, 0.75, -1.0), 8, 32, "D:/Ainstall/render/");
 	WindowProp window_prop(setup.w, setup.h);
 	InfoOutput info_output("Arial.ttf");
 	Camera camera(0.5, 0.3, 1.5, 1, Vector3f(0, 10, 5), Vector3f(0, 0, 0));
@@ -79,11 +80,11 @@ int main()
 				window_prop.focus = true;
 				window.setMouseCursorVisible(false);
 
-				if (!window_prop.render)
+				if (!render.rendering)
 					camera.Enable();
 			}
 
-			if (event.type == Event::MouseMoved && window_prop.focus && !window_prop.render)
+			if (event.type == Event::MouseMoved && window_prop.focus && !render.rendering)
 			{
 				if (camera.RotateCamera(event, window, setup))
 					window_prop.fixed_frame_counter = 1;
@@ -96,7 +97,7 @@ int main()
 				if (event.key.code == Keyboard::R)
 				{
 					cout << "Start render:\n";
-					window_prop.render = true;
+					render.rendering = true;
 					window_prop.render_elapsed_time.restart();
 					camera.Disable();
 				}
@@ -118,31 +119,31 @@ int main()
 		if (camera.MoveCamera())
 			window_prop.fixed_frame_counter = 1;
 
-		window_prop.choose_claster_size(setup.viewport_samples);
-		render::set_uniforms(shader, window_prop, setup, camera);
+		render.choose_claster_size(window_prop);
+		RenderF::set_uniforms(shader, window_prop, setup, render, camera);
 
 		window.draw(filler, &shader);
 		window_prop.preFrame.update(window);
 
-		info_output.draw(window, setup, camera, window_prop.current_samples);
+		info_output.draw(window, setup, camera, render);
 
-		if (window_prop.render)
+		if (render.rendering)
 		{
 			if (!info_output.disable)
 				draw_img(window, Graphic::VectorToImage(render_dump, setup));
 
-			window_prop.render_frame += window_prop.current_samples;
+			window_prop.render_frame += render.claster_size;
 			info_output.render_draw(window, setup, window_prop.render_frame, window_prop.render_elapsed_time);
 
-			Graphic::RenderApproximate(render_dump, window_prop.preFrame.copyToImage(), setup);
+			Graphic::RenderApproximate(render_dump, window_prop.preFrame.copyToImage(), setup, render);
 
-			if (window_prop.render_frame == setup.render_samples)
+			if (window_prop.render_frame == render.render_samples)
 			{
-				render::save_result(render_dump, window_prop.render_elapsed_time, setup);
+				RenderF::save_result(render_dump, window_prop.render_elapsed_time, setup);
 
 				window_prop.render_frame = 0;
 				window_prop.fixed_frame_counter = 1;
-				window_prop.render = false;
+				render.rendering = false;
 				camera.Enable();
 				render_dump = ImageAccurate(setup.h, vector<Vector3<long double>>(setup.w, Vector3<long double>(0, 0, 0)));
 			}

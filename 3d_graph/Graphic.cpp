@@ -1,5 +1,6 @@
 #include "Graphic.h"
 #include "Ini.h"
+#include "Render.h"
 
 float Graphic::Length(const Vector3f& vec)
 {
@@ -44,15 +45,15 @@ Vector3f Graphic::Mix(const Vector3f& v1, const Vector3f& v2, const float& perce
 	return Vector3f(v1.x + diff.x * percent, v1.y + diff.y * percent, v1.z + diff.z * percent);;
 }
 
-ImageAccurate Graphic::RenderApproximate(ImageAccurate& dump, const Image& image, const Ini& setup)
+ImageAccurate Graphic::RenderApproximate(ImageAccurate& dump, const Image& image, const Ini& setup, const Render& render)
 {
 	for (int i = 0; i < setup.h; i++)
 		for (int j = 0; j < setup.w; j++)
 		{
 			Color c = image.getPixel(j, i);
-			dump[i][j].x += int(c.r) / (long double)setup.render_samples;
-			dump[i][j].y += int(c.g) / (long double)setup.render_samples;
-			dump[i][j].z += int(c.b) / (long double)setup.render_samples;
+			dump[i][j].x += int(c.r) / (long double)render.render_samples / render.claster_size;
+			dump[i][j].y += int(c.g) / (long double)render.render_samples / render.claster_size;
+			dump[i][j].z += int(c.b) / (long double)render.render_samples / render.claster_size;
 		}
 
 	return dump;

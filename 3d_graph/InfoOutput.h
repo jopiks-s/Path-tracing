@@ -6,6 +6,7 @@
 
 class Ini;
 class Camera;
+class Render;
 
 using namespace sf;
 using namespace std;
@@ -21,6 +22,6 @@ public:
 	void Disable();
 	void Enable();
 	void Switch();
-	bool draw(RenderWindow& window, const Ini& setup, const Camera& camera, int claster_size);
+	bool draw(RenderWindow& window, const Ini& setup, const Camera& camera, const Render& render);
 	bool render_draw(RenderWindow& window, const Ini& setup, int sample, const Clock& elapsed_time);
 };

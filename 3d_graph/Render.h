@@ -10,8 +10,9 @@ using ImageAccurate = vector<vector<Vector3<long double>>>;
 class Ini;
 class WindowProp;
 class Camera;
+class Render;
 
-namespace render
+namespace RenderF
 {
 	void set_uniforms(Shader& shader, const WindowProp& window_prop, const Ini& setup, const Render& render, const Camera& camera);
 	bool save_result(const ImageAccurate& render_dump, const Clock render_elapsed_time, const Ini& setup);
@@ -24,7 +25,8 @@ public:
 		viewport_samples,
 		render_samples;
 
-	bool render = false;
+	bool rendering = false;
 
+	Render(int viewport_samples, int render_samples);
 	void choose_claster_size(const WindowProp& window_prop);
 };

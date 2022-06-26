@@ -4,6 +4,7 @@
 #include <vector>
 
 class Ini;
+class Render;
 
 using namespace sf;
 using namespace std;
@@ -16,6 +17,6 @@ namespace Graphic
 	Vector3f Rotate(const Vector3f& vec, const Vector3f& fi);
 	Vector3f Mix(const Vector3f& v1, const Vector3f& v2, const float& percent);
 
-	ImageAccurate RenderApproximate(ImageAccurate& dump, const Image& image, const Ini& setup);
+	ImageAccurate RenderApproximate(ImageAccurate& dump, const Image& image, const Ini& setup, const Render& render);
 	Image VectorToImage(const ImageAccurate& dump, const Ini& setup);
 }
