@@ -167,6 +167,7 @@
     <ClCompile Include="Render.cpp" />
     <ClCompile Include="sfml_extension.cpp" />
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="WindowProp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
@@ -175,6 +176,7 @@
     <ClInclude Include="Ini.h" />
     <ClInclude Include="Render.h" />
     <ClInclude Include="sfml_extension.h" />
+    <ClInclude Include="WindowProp.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Debug.frag" />

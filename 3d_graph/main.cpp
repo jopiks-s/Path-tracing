@@ -15,6 +15,7 @@
 #include "InfoOutput.h"
 #include "sfml_extension.h"
 #include "Render.h"
+#include "WindowProp.h"
 
 using namespace sf;
 using namespace std;
@@ -25,6 +26,7 @@ int main()
 	srand(time(NULL));
 
 	Ini setup(1200, 800, Vector3f(0.6, 0.75, -1.0), 8, 32, 128, 16, "D:/Ainstall/render/");
+	WindowProp window_prop(setup.w, setup.h);
 	InfoOutput info_output("Arial.ttf");
 	Camera camera(0.5, 0.3, 1.5, 1, Vector3f(0, 10, 5), Vector3f(0, 0, 0));
 	ImageAccurate render_dump(setup.h, vector<Vector3<long double>>(setup.w, Vector3<long double>(0, 0, 0)));
@@ -41,16 +43,6 @@ int main()
 	shader.setUniform("sun_size", setup.sun_size);
 	shader.setUniform("resolution", Vector2f(setup.w, setup.h));
 #pragma endregion
-
-	Clock render_elapsed_time;
-	int frame = 0, render_frame = 0, fixed_frame_counter = 1;
-	int current_samples = 0;
-
-	bool render = false,
-		focus = false;
-
-	Texture preFrame;
-	preFrame.create(setup.w, setup.h);
 
 #pragma region window
 
@@ -69,7 +61,7 @@ int main()
 
 	while (window.isOpen())
 	{
-		fixed_frame_counter++;
+		window_prop.fixed_frame_counter++;
 		Event event;
 		while (window.pollEvent(event))
 		{
@@ -78,34 +70,34 @@ int main()
 
 			if (event.type == Event::LostFocus)
 			{
-				focus = false;
+				window_prop.focus = false;
 				camera.Disable();
 				window.setMouseCursorVisible(true);
 			}
 			if (event.type == Event::MouseButtonPressed)
 			{
-				focus = true;
+				window_prop.focus = true;
 				window.setMouseCursorVisible(false);
 
-				if (!render)
+				if (!window_prop.render)
 					camera.Enable();
 			}
 
-			if (event.type == Event::MouseMoved && focus && !render)
+			if (event.type == Event::MouseMoved && window_prop.focus && !window_prop.render)
 			{
 				if (camera.RotateCamera(event, window, setup))
-					fixed_frame_counter = 1;
+					window_prop.fixed_frame_counter = 1;
 			}
 
 			if (event.type == Event::KeyPressed)
 			{
-				if (!focus)
+				if (!window_prop.focus)
 					continue;
 				if (event.key.code == Keyboard::R)
 				{
 					cout << "Start render:\n";
-					render = true;
-					render_elapsed_time.restart();
+					window_prop.render = true;
+					window_prop.render_elapsed_time.restart();
 					camera.Disable();
 				}
 
@@ -114,7 +106,7 @@ int main()
 
 				if (event.key.code == Keyboard::Escape)
 				{
-					focus = false;
+					window_prop.focus = false;
 					camera.Disable();
 					window.setMouseCursorVisible(true);
 				}
@@ -123,24 +115,24 @@ int main()
 		}
 
 		if (camera.MoveCamera())
-			fixed_frame_counter = 1;
+			window_prop.fixed_frame_counter = 1;
 
 #pragma region shader unifroms
-		shader.setUniform("frame", frame);
-		shader.setUniform("fixed_frame_counter", fixed_frame_counter);
+		shader.setUniform("frame", window_prop.frame);
+		shader.setUniform("fixed_frame_counter", window_prop.fixed_frame_counter);
 
-		if (render)
-			current_samples = 1;
-		else if (focus)
-			if (fixed_frame_counter < 10)
-				current_samples = 1;
+		if (window_prop.render)
+			window_prop.current_samples = 1;
+		else if (window_prop.focus)
+			if (window_prop.fixed_frame_counter < 10)
+				window_prop.current_samples = 1;
 			else
-				current_samples = setup.viewport_samples;
+				window_prop.current_samples = setup.viewport_samples;
 		else
-			current_samples = 1;
+			window_prop.current_samples = 1;
 
-		shader.setUniform("render", render);
-		shader.setUniform("samples", current_samples);
+		shader.setUniform("render", window_prop.render);
+		shader.setUniform("samples", window_prop.current_samples);
 
 		shader.setUniform("seed", Vector2f(rand(), rand()));
 
@@ -151,38 +143,38 @@ int main()
 
 		shader.setUniform("light_dir", setup.light_dir);
 
-		shader.setUniform("preFrame", preFrame);
+		shader.setUniform("preFrame", window_prop.preFrame);
 #pragma endregion
 
 		window.draw(filler, &shader);
-		preFrame.update(window);
+		window_prop.preFrame.update(window);
 
 		info_output.draw(window, setup, camera);
 
-		if (render)
+		if (window_prop.render)
 		{
 			if (!info_output.disable)
 				draw_img(window, Graphic::VectorToImage(render_dump, setup));
 
-			render_frame++;
-			info_output.render_draw(window, setup, render_frame, render_elapsed_time);
+			window_prop.render_frame++;
+			info_output.render_draw(window, setup, window_prop.render_frame, window_prop.render_elapsed_time);
 
-			Graphic::RenderApproximate(render_dump, preFrame.copyToImage(), setup);
+			Graphic::RenderApproximate(render_dump, window_prop.preFrame.copyToImage(), setup);
 
-			if (render_frame == setup.render_samples)
+			if (window_prop.render_frame == setup.render_samples)
 			{
-				Render::save_result(render_dump, render_elapsed_time, setup);
+				Render::save_result(render_dump, window_prop.render_elapsed_time, setup);
 
-				render_frame = 0;
-				fixed_frame_counter = 1;
-				render = false;
+				window_prop.render_frame = 0;
+				window_prop.fixed_frame_counter = 1;
+				window_prop.render = false;
 				camera.Enable();
 				render_dump = ImageAccurate(setup.h, vector<Vector3<long double>>(setup.w, Vector3<long double>(0, 0, 0)));
 			}
 		}
 
 		window.display();
-		frame++;
+		window_prop.frame++;
 	}
 
 	return 0;

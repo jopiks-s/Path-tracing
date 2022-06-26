@@ -42,6 +42,9 @@
     <Filter Include="Исходные файлы\Scene\Render">
       <UniqueIdentifier>{bf438159-ec50-43c1-bcc9-93dd485ccdad}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\Scene\WindowProp">
+      <UniqueIdentifier>{452419d3-c20e-4bc1-82a9-6d32fc74d370}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -70,6 +73,9 @@
     </ClCompile>
     <ClCompile Include="Render.cpp">
       <Filter>Исходные файлы\Scene\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowProp.cpp">
+      <Filter>Исходные файлы\Scene\WindowProp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -109,6 +115,9 @@
     </ClInclude>
     <ClInclude Include="Render.h">
       <Filter>Исходные файлы\Scene\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowProp.h">
+      <Filter>Исходные файлы\Scene\WindowProp</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
