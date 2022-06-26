@@ -6,6 +6,8 @@
 using namespace sf;
 using namespace std;
 
+class Render;
+
 class Ini
 {
 public:
@@ -15,11 +17,10 @@ public:
 	int sun_size;
 
 	int max_reflect;
-	int render_samples;
-	int viewport_samples;
+	Render render;
 
 	string render_path;
 
 	Ini(int w, int h, Vector3f light_dir, int sun_siz, int max_reflect,
-		int render_samples, int viewport_samples, string render_parth);
+		Render render, string render_parth);
 };

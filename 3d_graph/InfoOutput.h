@@ -21,6 +21,6 @@ public:
 	void Disable();
 	void Enable();
 	void Switch();
-	bool draw(RenderWindow& window, const Ini& setup, const Camera& camera);
+	bool draw(RenderWindow& window, const Ini& setup, const Camera& camera, int claster_size);
 	bool render_draw(RenderWindow& window, const Ini& setup, int sample, const Clock& elapsed_time);
 };

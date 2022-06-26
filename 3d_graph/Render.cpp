@@ -4,12 +4,12 @@
 #include "WindowProp.h"
 #include "Camera.h"
 
-void Render::set_uniforms(Shader& shader, const WindowProp& window_prop, const Ini& setup, const Camera& camera)
+void render::set_uniforms(Shader& shader, const WindowProp& window_prop, const Ini& setup, const Render& render, const Camera& camera)
 {
 	shader.setUniform("frame", window_prop.frame);
 	shader.setUniform("fixed_frame_counter", window_prop.fixed_frame_counter);
-	shader.setUniform("render", window_prop.render);
-	shader.setUniform("samples", window_prop.current_samples);
+	shader.setUniform("render", render.render);
+	shader.setUniform("samples", render.claster_size);
 	shader.setUniform("preFrame", window_prop.preFrame);
 
 	shader.setUniform("camera_origin", camera.camera_origin);
@@ -22,7 +22,7 @@ void Render::set_uniforms(Shader& shader, const WindowProp& window_prop, const I
 	shader.setUniform("light_dir", setup.light_dir);
 }
 
-bool Render::save_result(const ImageAccurate& render_dump, const Clock render_elapsed_time, const Ini& setup)
+bool render::save_result(const ImageAccurate& render_dump, const Clock render_elapsed_time, const Ini& setup)
 {
 	auto elapsed_time = FormatTime(render_elapsed_time.getElapsedTime());
 	cout << "Render done!\n";
@@ -46,4 +46,17 @@ bool Render::save_result(const ImageAccurate& render_dump, const Clock render_el
 		cout << "Can't save to this path: " + file_name + "\n";
 
 	return false;
+}
+
+void Render::choose_claster_size(const WindowProp& window_prop)
+{
+	if (render)
+		claster_size = 1;
+	else if (window_prop.focus)
+		if (window_prop.fixed_frame_counter < 10)
+			claster_size = 1;
+		else
+			claster_size = viewport_samples;
+	else
+		claster_size = 1;
 }

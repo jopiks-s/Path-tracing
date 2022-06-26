@@ -30,7 +30,7 @@ void InfoOutput::Switch()
 	disable = !disable;
 }
 
-bool InfoOutput::draw(RenderWindow& window, const Ini& setup, const Camera& camera)
+bool InfoOutput::draw(RenderWindow& window, const Ini& setup, const Camera& camera, int claster_size)
 {
 	if (disable)
 		return false;
@@ -45,10 +45,11 @@ bool InfoOutput::draw(RenderWindow& window, const Ini& setup, const Camera& came
 		+ "Viewport samples : " + to_string(setup.viewport_samples) + "\n"
 		+ "Render samples : " + to_string(setup.render_samples) + "\n"
 		+ "Render path : \"" + setup.render_path + "\"" + "\n"
-		+ "Camera position :  x: "
+		+ "Camera position : x: "
 		+ to_string((int)camera.camera_origin.x) + "; y: "
 		+ to_string((int)camera.camera_origin.y) + "; z: "
 		+ to_string((int)camera.camera_origin.z) + ";" + "\n"
+		+ "Claster size : " + to_string(claster_size) + "\n"
 		+ "\n"
 		+ "Movement: ^[W] <[A] v[S] >[D] ^^[SPACE] vv[LSHIFT]" + "\n"
 		+ "To start render: [R]" + "\n"

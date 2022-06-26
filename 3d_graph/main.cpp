@@ -118,13 +118,13 @@ int main()
 		if (camera.MoveCamera())
 			window_prop.fixed_frame_counter = 1;
 
-		window_prop.choose_samples(setup.viewport_samples);
-		Render::set_uniforms(shader, window_prop, setup, camera);
+		window_prop.choose_claster_size(setup.viewport_samples);
+		render::set_uniforms(shader, window_prop, setup, camera);
 
 		window.draw(filler, &shader);
 		window_prop.preFrame.update(window);
 
-		info_output.draw(window, setup, camera);
+		info_output.draw(window, setup, camera, window_prop.current_samples);
 
 		if (window_prop.render)
 		{
@@ -138,7 +138,7 @@ int main()
 
 			if (window_prop.render_frame == setup.render_samples)
 			{
-				Render::save_result(render_dump, window_prop.render_elapsed_time, setup);
+				render::save_result(render_dump, window_prop.render_elapsed_time, setup);
 
 				window_prop.render_frame = 0;
 				window_prop.fixed_frame_counter = 1;
