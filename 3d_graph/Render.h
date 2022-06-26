@@ -24,4 +24,5 @@ class WindowProp
 		focus = false;
 
 	Texture preFrame;
+	int fsdfsd;
 };
