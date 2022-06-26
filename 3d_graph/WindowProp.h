@@ -19,4 +19,5 @@ public:
 
 	WindowProp(int w, int h);
 	void choose_samples(int viewport_samples);
+	void calculate_fps(RenderWindow& window, string window_title);
 };

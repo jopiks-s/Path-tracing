@@ -114,15 +114,12 @@ int main()
 			camera.KeyboardInputRecord(event);
 		}
 
+
 		if (camera.MoveCamera())
 			window_prop.fixed_frame_counter = 1;
 
-#pragma region shader unifroms
-
 		window_prop.choose_samples(setup.viewport_samples);
 		Render::set_uniforms(shader, window_prop, setup, camera);
-
-#pragma endregion
 
 		window.draw(filler, &shader);
 		window_prop.preFrame.update(window);
@@ -153,6 +150,7 @@ int main()
 
 		window.display();
 		window_prop.frame++;
+		window_prop.calculate_fps(window, "bebe");
 	}
 
 	return 0;

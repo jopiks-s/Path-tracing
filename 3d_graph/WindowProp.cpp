@@ -18,3 +18,10 @@ void WindowProp::choose_samples(int viewport_samples)
 	else
 		current_samples = 1;
 }
+
+void WindowProp::calculate_fps(RenderWindow& window, string window_title)
+{
+	int fps = 1.0 / tick.getElapsedTime().asSeconds();
+	window.setTitle(window_title + " | " + to_string(fps) + " FPS");
+	tick.restart();
+}
