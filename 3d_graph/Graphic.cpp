@@ -51,9 +51,9 @@ ImageAccurate Graphic::RenderApproximate(ImageAccurate& dump, const Image& image
 		for (int j = 0; j < setup.w; j++)
 		{
 			Color c = image.getPixel(j, i);
-			dump[i][j].x += int(c.r) / (long double)render.render_samples / render.claster_size;
-			dump[i][j].y += int(c.g) / (long double)render.render_samples / render.claster_size;
-			dump[i][j].z += int(c.b) / (long double)render.render_samples / render.claster_size;
+			dump[i][j].x += (int(c.r) / (long double)render.render_samples) * render.claster_size;
+			dump[i][j].y += (int(c.g) / (long double)render.render_samples) * render.claster_size;
+			dump[i][j].z += (int(c.b) / (long double)render.render_samples) * render.claster_size;
 		}
 
 	return dump;

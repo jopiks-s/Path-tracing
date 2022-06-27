@@ -23,10 +23,11 @@ class Render
 public:
 	int claster_size,
 		viewport_samples,
-		render_samples;
+		render_samples,
+		MAX_CLASTER;
 
 	bool rendering = false;
 
-	Render(int viewport_samples, int render_samples);
+	Render(int viewport_samples, int render_samples, int MAX_CLASTER);
 	void choose_claster_size(const WindowProp& window_prop);
 };

@@ -25,7 +25,7 @@ int main()
 {
 	srand(time(NULL));
 
-	Render render(16, 64);
+	Render render(16, 4096, 128);
 	Ini setup(1200, 800, Vector3f(0.6, 0.75, -1.0), 8, 32, "D:/Ainstall/render/");
 	WindowProp window_prop(setup.w, setup.h);
 	InfoOutput info_output("Arial.ttf");
@@ -133,7 +133,7 @@ int main()
 				draw_img(window, Graphic::VectorToImage(render_dump, setup));
 
 			window_prop.render_frame += render.claster_size;
-			info_output.render_draw(window, setup, window_prop.render_frame, window_prop.render_elapsed_time);
+			info_output.render_draw(window, setup, window_prop.render_frame, window_prop.render_elapsed_time, render);
 
 			Graphic::RenderApproximate(render_dump, window_prop.preFrame.copyToImage(), setup, render);
 

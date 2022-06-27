@@ -23,5 +23,5 @@ public:
 	void Enable();
 	void Switch();
 	bool draw(RenderWindow& window, const Ini& setup, const Camera& camera, const Render& render);
-	bool render_draw(RenderWindow& window, const Ini& setup, int sample, const Clock& elapsed_time);
+	bool render_draw(RenderWindow& window, const Ini& setup, int sample, const Clock& elapsed_time, const Render& render);
 };

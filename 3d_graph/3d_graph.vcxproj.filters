@@ -74,6 +74,9 @@
     <ClCompile Include="WindowProp.cpp">
       <Filter>Исходные файлы\Scene\WindowProp</Filter>
     </ClCompile>
+    <ClCompile Include="RenderF.cpp">
+      <Filter>Исходные файлы\Scene\Render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="OutputShader.frag">

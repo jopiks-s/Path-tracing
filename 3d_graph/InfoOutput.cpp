@@ -63,14 +63,17 @@ bool InfoOutput::draw(RenderWindow& window, const Ini& setup, const Camera& came
 	return true;
 }
 
-bool InfoOutput::render_draw(RenderWindow& window, const Ini& setup, int sample, const Clock& elapsed_time)
+bool InfoOutput::render_draw(RenderWindow& window, const Ini& setup, int sample, const Clock& elapsed_time, const Render& render)
 {
 	if (disable)
 		return false;
 
 	auto time_str = TimeToString(FormatTime(elapsed_time.getElapsedTime()));
+
 	cout << sample << " sample--\n";
 	cout << "Elapsed time : " << time_str << "\n";
+	cout << "Claster size : " << render.claster_size << "\n";
+
 	Text render_t;
 	render_t.setCharacterSize(24);
 	render_t.setFont(font);
