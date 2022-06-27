@@ -27,7 +27,7 @@ bool Camera::MoveCamera()
 {
 	if (disable)
 		return false;
-	if (fly_dir.x == 0 && fly_dir.y == 0 && fly_dir.z == 0)
+	if (Graphic::Length(fly_dir) == 0)
 		return false;
 
 	camera_origin.z += fly_dir.z * camera_speed;

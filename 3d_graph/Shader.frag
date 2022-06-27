@@ -268,12 +268,13 @@ vec3 MultiTrace(in vec2 uv)
 	for (int i = 0; i < obj.length(); i++)
 		obj[i].color_ini();
 
-	//vec3 matrix_origin = Rotate(camera_origin + vec3(0, uv * camera_size), camera_rotation);
-	//vec3 rd = (camera_origin + Rotate(vec3(1, 0, 0), camera_rotation)*focal_distance) - matrix_origin; 
-	vec3 rd = Rotate(Normalize(vec3(1, uv)), camera_rotation);
+	vec3 matrix_origin = vec3(0, uv * camera_size);
+	vec3 world_origin = camera_origin + Rotate(matrix_origin, camera_rotation);
+	vec3 rd = Rotate(vec3(focal_distance, 0, 0) - matrix_origin, camera_rotation);
+	//vec3 rd = Rotate(Normalize(vec3(1, uv)), camera_rotation);
 	vec3 col;
 	for (int i = 0; i < samples; i++)
-		col += castRay(camera_origin, rd, obj, uv);
+		col += castRay(world_origin, rd, obj, uv);
 	return col / samples;
 }
 
