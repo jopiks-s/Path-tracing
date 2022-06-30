@@ -4,7 +4,7 @@
 #include "WindowProp.h"
 #include "Camera.h"
 
-void RenderF::set_uniforms(Shader& shader, const WindowProp& window_prop, const Ini& setup, const Render& render, const Camera& camera)
+void RenderF::set_uniforms(Shader& shader, const WindowProp& window_prop, const Ini& setup, Render& render, const Camera& camera)
 {
 	shader.setUniform("light_dir", setup.light_dir);
 
@@ -21,7 +21,10 @@ void RenderF::set_uniforms(Shader& shader, const WindowProp& window_prop, const 
 	shader.setUniform("aperture", (float)camera.aperture);
 	shader.setUniform("camera_size", (float)camera.camera_size);
 
-	shader.setUniform("seed", Vector2f(rand(), rand()));
+	//render.seed = Vector2f(rand() % 500000 - 250000, rand() % 500000 - 250000);
+	render.seed = Vector2f(rand() % 200000 - 10000, rand() % 200000 - 10000);
+	//render.seed = Vector2f(rand(), rand());
+	shader.setUniform("seed", render.seed);
 
 }
 

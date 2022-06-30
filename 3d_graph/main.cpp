@@ -25,11 +25,11 @@ int main()
 {
 	srand(time(NULL));
 
-	Render render(1, 2048, 128);
+	Render render(1, 2048, 32);
 	Ini setup(1200, 800, Vector3f(0.6, 0.75, -1.0), 8, 32, "D:/Ainstall/render/");
 	WindowProp window_prop(setup.w, setup.h);
-	InfoOutput info_output("Arial.ttf");
-	Camera camera(0.5, 0.3, 1, 500, 1, Vector3f(0, 0, 0), Vector3f(0, 0, 0));
+	InfoOutput info_output("Arial.ttf", true);
+	Camera camera(0.5, 0.3, 1, 620, 1, Vector3f(8, -23, 7), Vector3f(0, 12, 101));
 	ImageAccurate render_dump(setup.h, vector<Vector3<long double>>(setup.w, Vector3<long double>(0, 0, 0)));
 
 #pragma region shader

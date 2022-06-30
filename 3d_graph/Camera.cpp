@@ -1,8 +1,8 @@
 #include "Camera.h"
 
 Camera::Camera(double sensitivity, double camera_speed, double focal_length, double aperture, double camera_size, Vector3f camera_origin, Vector3f camera_rotation, bool disable)
-	: sensitivity(sensitivity), camera_speed(camera_speed), focal_length(focal_length), aperture(aperture), camera_size(camera_size), camera_origin(camera_origin), camera_rotation(camera_rotation),
-	fly_dir(0, 0, 0), disable(disable)
+	: sensitivity(sensitivity), camera_speed(camera_speed), focal_length(focal_length), aperture(aperture), camera_size(camera_size), camera_origin(camera_origin),
+	camera_rotation(Graphic::AngleToValue(camera_rotation)), fly_dir(0, 0, 0), disable(disable)
 {}
 
 bool Camera::RotateCamera(const Event& e, const RenderWindow& window, const Ini& setup)

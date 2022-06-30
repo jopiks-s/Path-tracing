@@ -61,12 +61,7 @@ bool InfoOutput::draw(RenderWindow& window, const Ini& setup, const Camera& came
 		<< ((int)angle.z) << "*" << "\n"
 		<< "Camera focal lenght : " << camera.focal_length << "\n"
 		<< "Camera aperture : f/" << camera.aperture << "\n"
-		<< "Claster size : " << render.claster_size << "\n"
-		<< "\n"
-		<< "Movement : ^[W] <[A] v[S] >[D] ^^[SPACE] vv[LSHIFT]" << "\n"
-		<< "Camera focal length : ^[ScrollUp] v[ScrollDown] Aperture : ^[1] v[2]" << "\n"
-		<< "To start render: [R]" << "\n"
-		<< "To close info: [I]";
+		<< "Claster size : " << render.claster_size;
 	setup_t.setString(output_str.str());
 	setup_t.setPosition(Vector2f(10, 10));
 
@@ -77,8 +72,8 @@ bool InfoOutput::draw(RenderWindow& window, const Ini& setup, const Camera& came
 
 bool InfoOutput::render_draw(RenderWindow& window, const Ini& setup, int sample, const Clock& elapsed_time, const Render& render)
 {
-	if (disable)
-		return false;
+	//if (disable)
+	//	return false;
 
 	auto time_str = TimeToString(FormatTime(elapsed_time.getElapsedTime()));
 
@@ -86,7 +81,8 @@ bool InfoOutput::render_draw(RenderWindow& window, const Ini& setup, int sample,
 	output_str <<
 		sample << " sample--\n" <<
 		"Elapsed time : " << time_str << "\n" <<
-		"Claster size : " << render.claster_size << "\n";
+		"Claster size : " << render.claster_size << "\n" <<
+		"Seed : " << render.seed.x << "; " << render.seed.y << '\n';
 	cout << output_str.str();
 	Text render_t;
 	render_t.setCharacterSize(24);

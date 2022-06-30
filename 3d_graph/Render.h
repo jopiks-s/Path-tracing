@@ -14,7 +14,7 @@ class Render;
 
 namespace RenderF
 {
-	void set_uniforms(Shader& shader, const WindowProp& window_prop, const Ini& setup, const Render& render, const Camera& camera);
+	void set_uniforms(Shader& shader, const WindowProp& window_prop, const Ini& setup, Render & render, const Camera& camera);
 	bool save_result(const ImageAccurate& render_dump, const Clock render_elapsed_time, const Ini& setup);
 }
 
@@ -25,7 +25,7 @@ public:
 		viewport_samples,
 		render_samples,
 		MAX_CLASTER;
-
+	Vector2f seed;
 	bool rendering = false;
 
 	Render(int viewport_samples, int render_samples, int MAX_CLASTER);
