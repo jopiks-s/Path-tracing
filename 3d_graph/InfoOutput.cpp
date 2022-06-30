@@ -47,9 +47,9 @@ bool InfoOutput::draw(RenderWindow& window, const Ini& setup, const Camera& came
 	ostringstream output_str;
 	output_str <<
 		"W : " << (setup.w) << "; H : " << (setup.h) << "\n"
-		<< "Maximum reflect : " << (setup.max_reflect) << "\n"
-		<< "Viewport samples : " << (render.viewport_samples) << "\n"
-		<< "Render samples : " << (render.render_samples) << "\n"
+		<< "Maximum reflect : " << setup.max_reflect << "\n"
+		<< "Viewport samples : " << render.viewport_samples << "\n"
+		<< "Render samples : " << render.render_samples << "\n"
 		<< "Render path : \"" << setup.render_path << "\"" << "\n"
 		<< "Camera position : x: "
 		<< ((int)camera.camera_origin.x) << "; y: "
@@ -61,9 +61,10 @@ bool InfoOutput::draw(RenderWindow& window, const Ini& setup, const Camera& came
 		<< ((int)angle.z) << "*" << "\n"
 		<< "Camera focal lenght : " << camera.focal_length << "\n"
 		<< "Camera aperture : f/" << camera.aperture << "\n"
-		<< "Claster size : " << (render.claster_size) << "\n"
+		<< "Claster size : " << render.claster_size << "\n"
 		<< "\n"
-		<< "Movement: ^[W] <[A] v[S] >[D] ^^[SPACE] vv[LSHIFT]" << "\n"
+		<< "Movement : ^[W] <[A] v[S] >[D] ^^[SPACE] vv[LSHIFT]" << "\n"
+		<< "Camera focal length : ^[ScrollUp] v[ScrollDown] Aperture : ^[1] v[2]" << "\n"
 		<< "To start render: [R]" << "\n"
 		<< "To close info: [I]";
 	setup_t.setString(output_str.str());

@@ -25,7 +25,7 @@ public:
 	bool RotateCamera(const Event& e, const RenderWindow& window, const Ini& setup);
 	bool MoveCamera();
 
-	void KeyboardInputRecord(const Event& e);
+	bool KeyboardInputRecord(const Event& e);
 
 	void Disable();
 	void Enable();

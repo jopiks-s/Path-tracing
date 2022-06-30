@@ -260,17 +260,17 @@ vec3 castRay(in vec3 ro, in vec3 rd, in Object obj[object_amount], in vec2 uv)
 vec3 MultiTrace(in vec2 uv)
 {
 	Object obj[object_amount];
-	obj[0] = Object(0, vec3(3, 10, 0.5), 1.5, Material(0, vec3(1.0, 0.2, 0.2), 0.2, 0, 1), vec3(0.0), vec2(0.0));		//sphere
-	obj[1] = Object(1, vec3(-5, 3, 4), 2.5, Material(0, vec3(0.3, 0.1, 0.3), 0.8, 0, 1), vec3(0.0), vec2(0.0));			//cub
-	obj[2] = Object(1, vec3(-15, 7, 2), 2.5, Material(0, vec3(0.1, 1, 0), 0.7, 0, 1), vec3(0.0), vec2(0.0));			//cub
-	obj[3] = Object(2, vec3(0.0), 1, Material(0, vec3(0.3, 0.4, 0.1), 0.9, 0, 1), vec3(0, 0, 1), vec2(0.0));			//plane
+	obj[0] = Object(2, vec3(0.0), 1, Material(0, vec3(0.3, 0.4, 0.1), 0.9, 0, 1), vec3(0, 0, 1), vec2(0.0));			//plane
+	obj[1] = Object(0, vec3(3, 10, 0.5), 1.5, Material(0, vec3(1.0, 0.2, 0.2), 0.2, 0, 1), vec3(0.0), vec2(0.0));		//sphere
+	obj[2] = Object(1, vec3(-5, 3, 4), 2.5, Material(0, vec3(0.3, 0.1, 0.3), 0.8, 0, 1), vec3(0.0), vec2(0.0));			//cub
+	obj[3] = Object(1, vec3(-15, 7, 2), 2.5, Material(0, vec3(0.1, 1, 0), 0.7, 0, 1), vec3(0.0), vec2(0.0));			//cub
 	obj[4] = Object(0, vec3(3, 5, 7), 2.5, Material(1, vec3(1, 1, 1), 1, 0, 1), vec3(0.0), vec2(0.0));					//lamp
 	obj[5] = Object(0, vec3(-10, -3, 6.5), 2.5, Material(1, vec3(1, 1, 1), 1, 0, 1), vec3(0.0), vec2(0.0));				//lamp
 	obj[6] = Object(0, vec3(10, 5, 2), 1.5, Material(0, vec3(0.7, 0.7, 0.7), 0, 0.1, 0.74), vec3(0.0), vec2(0.0));	//sphere
 	for (int i = 0; i < obj.length(); i++)
 		obj[i].color_ini();
 
-	vec3 matrix_origin = vec3(0, uv * camera_size);
+	vec3 matrix_origin = vec3(0, -uv * camera_size);
 	vec3 world_origin = camera_origin + Rotate(matrix_origin, camera_rotation);
 
 	vec3 focus_plane = random_v3(uv, world_origin, Rotate(Normalize(vec3(1, uv)), camera_rotation), true) * (focal_length / aperture);

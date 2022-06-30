@@ -25,11 +25,11 @@ int main()
 {
 	srand(time(NULL));
 
-	Render render(16, 2048, 128);
+	Render render(1, 2048, 128);
 	Ini setup(1200, 800, Vector3f(0.6, 0.75, -1.0), 8, 32, "D:/Ainstall/render/");
 	WindowProp window_prop(setup.w, setup.h);
 	InfoOutput info_output("Arial.ttf");
-	Camera camera(0.5, 0.3, 1, 500.335, 1, Vector3f(0, 10, 5), Vector3f(0, 3.14, 0));
+	Camera camera(0.5, 0.3, 1, 500, 1, Vector3f(0, 0, 0), Vector3f(0, 0, 0));
 	ImageAccurate render_dump(setup.h, vector<Vector3<long double>>(setup.w, Vector3<long double>(0, 0, 0)));
 
 #pragma region shader
@@ -84,40 +84,42 @@ int main()
 					camera.Enable();
 			}
 
-			if (event.type == Event::MouseMoved && window_prop.focus && !render.rendering)
+			if (window_prop.focus) //responso only if FOCUS
 			{
-				if (camera.RotateCamera(event, window, setup))
+				if (event.type == Event::MouseMoved && window_prop.focus && !render.rendering)
+				{
+					if (camera.RotateCamera(event, window, setup))
+						window_prop.fixed_frame_counter = 1;
+				}
+
+				if (event.type == Event::KeyPressed)
+				{
+					if (!window_prop.focus)
+						continue;
+					if (event.key.code == Keyboard::R)
+					{
+						cout << "Start render:\n";
+						render.rendering = true;
+						window_prop.render_elapsed_time.restart();
+						camera.Disable();
+					}
+
+					if (event.key.code == Keyboard::I)
+						info_output.Switch();
+
+					if (event.key.code == Keyboard::Escape)
+					{
+						window_prop.focus = false;
+						camera.Disable();
+						window.setMouseCursorVisible(true);
+					}
+				}
+				if (camera.KeyboardInputRecord(event))
 					window_prop.fixed_frame_counter = 1;
 			}
-
-			if (event.type == Event::KeyPressed)
-			{
-				if (!window_prop.focus)
-					continue;
-				if (event.key.code == Keyboard::R)
-				{
-					cout << "Start render:\n";
-					render.rendering = true;
-					window_prop.render_elapsed_time.restart();
-					camera.Disable();
-				}
-
-				if (event.key.code == Keyboard::I)
-					info_output.Switch();
-
-				if (event.key.code == Keyboard::Escape)
-				{
-					window_prop.focus = false;
-					camera.Disable();
-					window.setMouseCursorVisible(true);
-				}
-			}
-			camera.KeyboardInputRecord(event);
 		}
 
-
-		if (camera.MoveCamera())
-			window_prop.fixed_frame_counter = 1;
+		camera.MoveCamera();
 
 		render.choose_claster_size(window_prop);
 		RenderF::set_uniforms(shader, window_prop, setup, render, camera);

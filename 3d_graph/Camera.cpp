@@ -46,13 +46,17 @@ bool Camera::MoveCamera()
 	return true;
 }
 
-void Camera::KeyboardInputRecord(const Event& e)
+bool Camera::KeyboardInputRecord(const Event& e)
 {
 	if (disable)
-		return;
-
+		return false;
+	bool change = false;
 	if (e.type == Event::KeyPressed)
 	{
+		if (e.key.code == Keyboard::W || e.key.code == Keyboard::S || e.key.code == Keyboard::A
+			|| e.key.code == Keyboard::D || e.key.code == Keyboard::Space
+			|| e.key.code == Keyboard::LShift || e.key.code == Keyboard::Num1 || e.key.code == Keyboard::Num2)
+			change = true;
 		if (e.key.code == Keyboard::W)
 			fly_dir.x = 1;
 		if (e.key.code == Keyboard::S)
@@ -65,10 +69,17 @@ void Camera::KeyboardInputRecord(const Event& e)
 			fly_dir.z = 1;
 		if (e.key.code == Keyboard::LShift)
 			fly_dir.z = -1;
+		if (e.key.code == Keyboard::Num1)
+			aperture += 5;
+		if (e.key.code == Keyboard::Num2)
+			aperture -= 5;
 	}
 
 	if (e.type == Event::KeyReleased)
 	{
+		if (e.key.code == Keyboard::W || e.key.code == Keyboard::S || e.key.code == Keyboard::A
+			|| e.key.code == Keyboard::D || e.key.code == Keyboard::Space || e.key.code == Keyboard::LShift)
+			change = true;
 		if (e.key.code == Keyboard::W)
 			fly_dir.x = 0;
 		if (e.key.code == Keyboard::S)
@@ -84,7 +95,12 @@ void Camera::KeyboardInputRecord(const Event& e)
 	}
 
 	if (e.type == Event::MouseWheelMoved)
-		aperture += e.mouseWheel.delta * sensitivity;
+	{
+		focal_length += e.mouseWheel.delta * 0.1;
+		change = true;
+	}
+
+	return change;
 }
 
 void Camera::Disable()
