@@ -17,7 +17,8 @@ void RenderF::set_uniforms(Shader& shader, const WindowProp& window_prop, const 
 
 	shader.setUniform("camera_origin", camera.camera_origin);
 	shader.setUniform("camera_rotation", camera.camera_rotation);
-	shader.setUniform("focal_distance", (float)camera.focal_distance);
+	shader.setUniform("focal_length", (float)camera.focal_length);
+	shader.setUniform("aperture", (float)camera.aperture);
 	shader.setUniform("camera_size", (float)camera.camera_size);
 
 	shader.setUniform("seed", Vector2f(rand(), rand()));

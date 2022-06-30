@@ -1,7 +1,7 @@
 #include "Camera.h"
 
-Camera::Camera(double sensitivity, double camera_speed, double focal_distance, double camera_size, Vector3f camera_origin, Vector3f camera_rotation, bool disable)
-	: sensitivity(sensitivity), camera_speed(camera_speed), focal_distance(focal_distance), camera_size(camera_size), camera_origin(camera_origin), camera_rotation(camera_rotation),
+Camera::Camera(double sensitivity, double camera_speed, double focal_length, double aperture, double camera_size, Vector3f camera_origin, Vector3f camera_rotation, bool disable)
+	: sensitivity(sensitivity), camera_speed(camera_speed), focal_length(focal_length), aperture(aperture), camera_size(camera_size), camera_origin(camera_origin), camera_rotation(camera_rotation),
 	fly_dir(0, 0, 0), disable(disable)
 {}
 
@@ -82,6 +82,9 @@ void Camera::KeyboardInputRecord(const Event& e)
 		if (e.key.code == Keyboard::LShift)
 			fly_dir.z = 0;
 	}
+
+	if (e.type == Event::MouseWheelMoved)
+		aperture += e.mouseWheel.delta * sensitivity;
 }
 
 void Camera::Disable()

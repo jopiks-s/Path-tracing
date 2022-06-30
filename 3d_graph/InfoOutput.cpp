@@ -35,27 +35,38 @@ bool InfoOutput::draw(RenderWindow& window, const Ini& setup, const Camera& came
 {
 	if (disable)
 		return false;
+	if (render.rendering)
+		return false;
+
+	auto angle = Graphic::ValueToAngle(camera.camera_rotation);
 
 	Text setup_t;
 	setup_t.setCharacterSize(24);
 	setup_t.setFont(font);
 	setup_t.setFillColor(Color::White);
-	setup_t.setString(
-		"W : " + to_string(setup.w) + "; H : " + to_string(setup.h) + "\n"
-		+ "Maximum reflect : " + to_string(setup.max_reflect) + "\n"
-		+ "Viewport samples : " + to_string(render.viewport_samples) + "\n"
-		+ "Render samples : " + to_string(render.render_samples) + "\n"
-		+ "Render path : \"" + setup.render_path + "\"" + "\n"
-		+ "Camera position : x: "
-		+ to_string((int)camera.camera_origin.x) + "; y: "
-		+ to_string((int)camera.camera_origin.y) + "; z: "
-		+ to_string((int)camera.camera_origin.z) + ";" + "\n"
-		+ "Claster size : " + to_string(render.claster_size) + "\n"
-		+ "\n"
-		+ "Movement: ^[W] <[A] v[S] >[D] ^^[SPACE] vv[LSHIFT]" + "\n"
-		+ "To start render: [R]" + "\n"
-		+ "To close info: [I]"
-	);
+	ostringstream output_str;
+	output_str <<
+		"W : " << (setup.w) << "; H : " << (setup.h) << "\n"
+		<< "Maximum reflect : " << (setup.max_reflect) << "\n"
+		<< "Viewport samples : " << (render.viewport_samples) << "\n"
+		<< "Render samples : " << (render.render_samples) << "\n"
+		<< "Render path : \"" << setup.render_path << "\"" << "\n"
+		<< "Camera position : x: "
+		<< ((int)camera.camera_origin.x) << "; y: "
+		<< ((int)camera.camera_origin.y) << "; z: "
+		<< ((int)camera.camera_origin.z) << ";" << "\n"
+		<< "Camera rotation : "
+		<< ((int)angle.x) << "* "
+		<< ((int)angle.y) << "* "
+		<< ((int)angle.z) << "*" << "\n"
+		<< "Camera focal lenght : " << camera.focal_length << "\n"
+		<< "Camera aperture : f/" << camera.aperture << "\n"
+		<< "Claster size : " << (render.claster_size) << "\n"
+		<< "\n"
+		<< "Movement: ^[W] <[A] v[S] >[D] ^^[SPACE] vv[LSHIFT]" << "\n"
+		<< "To start render: [R]" << "\n"
+		<< "To close info: [I]";
+	setup_t.setString(output_str.str());
 	setup_t.setPosition(Vector2f(10, 10));
 
 	window.draw(setup_t);
@@ -70,18 +81,17 @@ bool InfoOutput::render_draw(RenderWindow& window, const Ini& setup, int sample,
 
 	auto time_str = TimeToString(FormatTime(elapsed_time.getElapsedTime()));
 
-	cout << sample << " sample--\n";
-	cout << "Elapsed time : " << time_str << "\n";
-	cout << "Claster size : " << render.claster_size << "\n";
-
+	ostringstream output_str;
+	output_str <<
+		sample << " sample--\n" <<
+		"Elapsed time : " << time_str << "\n" <<
+		"Claster size : " << render.claster_size << "\n";
+	cout << output_str.str();
 	Text render_t;
 	render_t.setCharacterSize(24);
 	render_t.setFont(font);
 	render_t.setFillColor(Color::White);
-	render_t.setString(
-		"Rendered samples : " + to_string(sample) + "\n"
-		+ "Elapsed time : " + time_str
-	);
+	render_t.setString(output_str.str());
 	render_t.setOrigin(render_t.getGlobalBounds().width, 0);
 	render_t.setPosition(setup.w - 10, 10);
 

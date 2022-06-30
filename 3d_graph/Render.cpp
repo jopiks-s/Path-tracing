@@ -6,10 +6,7 @@
 
 Render::Render(int viewport_samples, int render_samples, int MAX_CLASTER)
 	: viewport_samples(viewport_samples), render_samples(render_samples), MAX_CLASTER(MAX_CLASTER)
-{
-	if (MAX_CLASTER % 2 == 1)
-		this->MAX_CLASTER++;
-}
+{}
 
 void Render::choose_claster_size(const WindowProp& window_prop)
 {

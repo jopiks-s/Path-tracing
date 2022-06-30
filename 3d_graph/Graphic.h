@@ -19,4 +19,7 @@ namespace Graphic
 
 	ImageAccurate RenderApproximate(ImageAccurate& dump, const Image& image, const Ini& setup, const Render& render);
 	Image VectorToImage(const ImageAccurate& dump, const Ini& setup);
+
+	Vector3f ValueToAngle(const Vector3f& vec);
+	Vector3f AngleToValue(const Vector3f& vec);
 }

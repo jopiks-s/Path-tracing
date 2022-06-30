@@ -9,17 +9,18 @@ class Camera
 {
 public:
 
-	double sensitivity;
-	double camera_speed;
-	double focal_distance;
-	double camera_size;
-	Vector3f camera_origin;
-	Vector3f camera_rotation;
-	Vector3f fly_dir;
+	double sensitivity,
+		camera_speed,
+		focal_length,
+		aperture,
+		camera_size;
+	Vector3f camera_origin,
+		camera_rotation,
+		fly_dir;
 
 	bool disable;
 
-	Camera(double sensitivity, double camera_speed, double focal_distance, double camera_size, Vector3f camera_origin, Vector3f camera_rotation, bool disable = false);
+	Camera(double sensitivity, double camera_speed, double focal_length, double aperture, double camera_size, Vector3f camera_origin, Vector3f camera_rotation, bool disable = false);
 
 	bool RotateCamera(const Event& e, const RenderWindow& window, const Ini& setup);
 	bool MoveCamera();

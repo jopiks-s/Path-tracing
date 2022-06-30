@@ -9,7 +9,8 @@ uniform vec2 seed;
 
 uniform vec3 camera_origin;
 uniform vec3 camera_rotation;
-uniform float focal_distance;
+uniform float focal_length;
+uniform float aperture;
 uniform float camera_size;
 
 uniform vec3 light_dir;
@@ -37,6 +38,7 @@ vec3 clamp(in vec3 vec, in float minv = 0, in float maxv = 1) { return vec3(clam
 float random_f(in vec2 uv, in vec3 ro, in vec3 rd, in bool full_range = true)
 {
 	ro = vec3(int(ro.x) % 10000, int(ro.y) % 10000, int(ro.z) % 3);
+	rd = Normalize(rd);
 	rand_counter+= seed.x;
 	float rand_v = fract(sin(rand_counter + frame * ro.z + dot(rd.xy * uv, vec2(12.9898, 78.233) * seed * rd.z)) * (43758.5453123 + ro.x + ro.y));
 	if(full_range)
@@ -270,8 +272,10 @@ vec3 MultiTrace(in vec2 uv)
 
 	vec3 matrix_origin = vec3(0, uv * camera_size);
 	vec3 world_origin = camera_origin + Rotate(matrix_origin, camera_rotation);
-	vec3 rd = Rotate(vec3(focal_distance, 0, 0) - matrix_origin, camera_rotation);
-	//vec3 rd = Rotate(Normalize(vec3(1, uv)), camera_rotation);
+
+	vec3 focus_plane = random_v3(uv, world_origin, Rotate(Normalize(vec3(1, uv)), camera_rotation), true) * (focal_length / aperture);
+	vec3 rd = Rotate(vec3(focal_length, focus_plane) - matrix_origin, camera_rotation);
+
 	vec3 col;
 	for (int i = 0; i < samples; i++)
 		col += castRay(world_origin, rd, obj, uv);

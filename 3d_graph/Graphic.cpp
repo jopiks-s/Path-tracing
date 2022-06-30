@@ -74,3 +74,13 @@ Image Graphic::VectorToImage(const ImageAccurate& dump, const Ini& setup)
 		}
 	return img;
 }
+
+Vector3f Graphic::ValueToAngle(const Vector3f& vec)
+{
+	return Vector3f((vec.x / 3.14) * 180, (vec.y / 3.14) * 180, (vec.z / 3.14) * 180);
+}
+
+Vector3f Graphic::AngleToValue(const Vector3f& vec)
+{
+	return Vector3f((vec.x / 180) * 3.14, (vec.y / 180) * 3.14, (vec.z / 180) * 3.14);
+}
