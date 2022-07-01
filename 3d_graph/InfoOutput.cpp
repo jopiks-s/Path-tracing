@@ -81,8 +81,7 @@ bool InfoOutput::render_draw(RenderWindow& window, const Ini& setup, int sample,
 	output_str <<
 		sample << " sample--\n" <<
 		"Elapsed time : " << time_str << "\n" <<
-		"Claster size : " << render.claster_size << "\n" <<
-		"Seed : " << render.seed.x << "; " << render.seed.y << '\n';
+		"Claster size : " << render.claster_size << "\n";
 	cout << output_str.str();
 	Text render_t;
 	render_t.setCharacterSize(24);

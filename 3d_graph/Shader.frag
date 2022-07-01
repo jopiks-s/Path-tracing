@@ -5,7 +5,7 @@ uniform int frame;
 uniform int fixed_frame_counter;
 uniform bool render;
 
-uniform vec2 seed;
+uniform vec2[128] seeds;
 
 uniform vec3 camera_origin;
 uniform vec3 camera_rotation;
@@ -25,6 +25,7 @@ uniform sampler2D sky;
 ///////////////////////////////////////////////
 const int object_amount = 7;
 int rand_counter = 0;
+int sample_pointer = 0;
 
 float Length(in vec3 v) { return sqrt(v.x * v.x + v.y * v.y + v.z * v.z); }
 float Length(in vec2 v) { return sqrt(v.x * v.x + v.y * v.y); }
@@ -37,8 +38,9 @@ float clamp(in float val, in float minv = 0, in float maxv = 1) { return max(min
 vec3 clamp(in vec3 vec, in float minv = 0, in float maxv = 1) { return vec3(clamp(vec.x, minv, maxv), clamp(vec.y, minv, maxv), clamp(vec.z, minv, maxv)); }
 
 
-float random_f(in vec2 uv, in vec3 ro, in vec3 rd, in bool full_range = true)
+float random_f(in vec2 uv, in vec3 ro, in vec3 rd, in int index, in bool full_range = true)
 {
+	vec2 seed = seeds[index];
 	ro = vec3(int(ro.x) % 10000, int(ro.y) % 10000, int(ro.z) % 3);
 	rd = Normalize(rd);
 	rand_counter += seed.x - seed.y;
@@ -50,13 +52,15 @@ float random_f(in vec2 uv, in vec3 ro, in vec3 rd, in bool full_range = true)
 	}
 	return rand_v;
 }
-vec3 random_v3(in vec2 uv, in vec3 ro, in vec3 rd, bool full_range = true, bool normalized = true)
+vec3 random_v3(in vec2 uv, in vec3 ro, in vec3 rd, in int index, bool full_range = true, bool normalized = true)
 {
 	bool correct = false;
 	vec3 ret;
 	while (!correct)
 	{
-		ret = vec3(random_f(uv, ro, rd, full_range), random_f(uv, ro, rd, full_range), random_f(uv, ro, rd, full_range));
+		ret = vec3(random_f(uv, ro, rd, index, full_range), 
+				   random_f(uv, ro, rd, index, full_range), 
+				   random_f(uv, ro, rd, index, full_range));
 		if (Length(ret) < 1.0)
 			correct = true;
 	}
@@ -65,13 +69,14 @@ vec3 random_v3(in vec2 uv, in vec3 ro, in vec3 rd, bool full_range = true, bool 
 		return Normalize(ret);
 	return ret;
 }
-vec2 random_v2(in vec2 uv, in vec3 ro, in vec3 rd, bool full_range = true, bool normalized = true)
+vec2 random_v2(in vec2 uv, in vec3 ro, in vec3 rd, in int index, bool full_range = true, bool normalized = true)
 {
 	bool correct = false;
 	vec2 ret;
 	while (!correct)
 	{
-		ret = vec2(random_f(uv, ro, rd, full_range), random_f(uv, ro, rd, full_range));
+		ret = vec2(random_f(uv, ro, rd, index, full_range), 
+				   random_f(uv, ro, rd, index, full_range));
 		if (Length(ret) < 1.0)
 			correct = true;
 	}
@@ -242,7 +247,7 @@ vec3 castRay(in vec3 ro, in vec3 rd, in Object obj[object_amount], in vec2 uv)
 
 		color *= obj[min].mat.color;
 
-		float random = random_f(uv, ro, rd, false);
+		float random = random_f(uv, ro, rd, sample_pointer, false);
 		float reflect_chance;
 		if (obj[min].mat.Refraction == 1)
 			reflect_chance = 100;
@@ -252,7 +257,7 @@ vec3 castRay(in vec3 ro, in vec3 rd, in Object obj[object_amount], in vec2 uv)
 		{
 			ro += rd * obj[min].distance.x + obj[min].normal*0.001; // obj[min].normal*0.001 - fix artefacts
 
-			vec3 random_rd = random_v3(uv, ro, rd);
+			vec3 random_rd = random_v3(uv, ro, rd, sample_pointer);
 			random_rd = Normalize(random_rd * dot(obj[min].normal, random_rd));
 
 			vec3 specular_rd = reflect(rd, obj[min].normal);
@@ -267,7 +272,7 @@ vec3 castRay(in vec3 ro, in vec3 rd, in Object obj[object_amount], in vec2 uv)
 			vec3 refract_rd = refract(rd, obj[min].normal, obj[min].mat.Refraction);
 
 			obj[min].CalculateObjectGraphic(roY_far, -refract_rd);
-			vec3 random_rd = random_v3(uv, ro, rd);
+			vec3 random_rd = random_v3(uv, ro, rd, sample_pointer);
 			random_rd = Normalize(random_rd * dot(obj[min].normal, random_rd));
 
 			rd = Normalize(mix(refract_rd, random_rd, obj[min].mat.Roughness));
@@ -293,13 +298,18 @@ vec3 MultiTrace(in vec2 uv)
 	vec3 matrix_origin = vec3(0, -uv * camera_size);
 	vec3 world_origin = camera_origin + Rotate(matrix_origin, camera_rotation);
 
-	vec2 focus_coord = random_v2(uv, world_origin, Rotate(Normalize(vec3(1, uv)), camera_rotation), true, false) * (focal_length / aperture);
-
-	vec3 rd = Rotate(vec3(focal_length, focus_coord) - matrix_origin, camera_rotation);
-
 	vec3 col;
 	for (int i = 0; i < samples; i++)
+	{
+		vec2 focus_coord = random_v2(uv, world_origin, Rotate(Normalize(vec3(1, uv)), camera_rotation), sample_pointer, true, false) 
+							*
+							(focal_length / aperture);
+
+		vec3 rd = Rotate(vec3(focal_length, focus_coord) - matrix_origin, camera_rotation);
+
 		col += castRay(world_origin, rd, obj, uv);
+		sample_pointer++;
+	}
 	return col / samples;
 }
 

@@ -12,22 +12,18 @@ class WindowProp;
 class Camera;
 class Render;
 
-namespace RenderF
-{
-	void set_uniforms(Shader& shader, const WindowProp& window_prop, const Ini& setup, Render & render, const Camera& camera);
-	bool save_result(const ImageAccurate& render_dump, const Clock render_elapsed_time, const Ini& setup);
-}
-
 class Render
 {
 public:
 	int claster_size,
 		viewport_samples,
-		render_samples,
-		MAX_CLASTER;
-	Vector2f seed;
+		render_samples;
+	const int MAX_CLASTER;
 	bool rendering = false;
 
 	Render(int viewport_samples, int render_samples, int MAX_CLASTER);
 	void choose_claster_size(const WindowProp& window_prop);
+
+	void set_uniforms(Shader& shader, const WindowProp& window_prop, const Ini& setup, const Camera& camera);
+	bool save_result(const ImageAccurate& render_dump, const Clock& render_elapsed_time, const Ini& setup);
 };

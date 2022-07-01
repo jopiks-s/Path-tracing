@@ -165,7 +165,6 @@
     <ClCompile Include="Ini.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Render.cpp" />
-    <ClCompile Include="RenderF.cpp" />
     <ClCompile Include="sfml_extension.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="WindowProp.cpp" />

@@ -25,7 +25,7 @@ int main()
 {
 	srand(time(NULL));
 
-	Render render(1, 2048, 32);
+	Render render(1, 2048, 64);
 	Ini setup(1200, 800, Vector3f(0.6, 0.75, -1.0), 8, 32, "D:/Ainstall/render/");
 	WindowProp window_prop(setup.w, setup.h);
 	InfoOutput info_output("Arial.ttf", true);
@@ -122,7 +122,7 @@ int main()
 		camera.MoveCamera();
 
 		render.choose_claster_size(window_prop);
-		RenderF::set_uniforms(shader, window_prop, setup, render, camera);
+		render.set_uniforms(shader, window_prop, setup, camera);
 
 		window.draw(filler, &shader);
 		window_prop.preFrame.update(window);
@@ -141,7 +141,7 @@ int main()
 
 			if (window_prop.render_frame == render.render_samples)
 			{
-				RenderF::save_result(render_dump, window_prop.render_elapsed_time, setup);
+				render.save_result(render_dump, window_prop.render_elapsed_time, setup);
 
 				window_prop.render_frame = 0;
 				window_prop.fixed_frame_counter = 1;

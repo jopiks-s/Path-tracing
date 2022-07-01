@@ -1,2 +1,3 @@
 . pixel glitch on render
 . generate point on sphere instead of cube
+. remove empty rendering InfoOutput::draw when <rendering>
