@@ -72,8 +72,8 @@ bool InfoOutput::draw(RenderWindow& window, const Ini& setup, const Camera& came
 
 bool InfoOutput::render_draw(RenderWindow& window, const Ini& setup, int sample, const Clock& elapsed_time, const Render& render)
 {
-	//if (disable)
-	//	return false;
+	if (disable)
+		return false;
 
 	auto time_str = TimeToString(FormatTime(elapsed_time.getElapsedTime()));
 

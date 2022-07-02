@@ -5,8 +5,13 @@
 #include "Camera.h"
 
 Render::Render(int viewport_samples, int render_samples, int MAX_CLASTER)
-	: viewport_samples(viewport_samples), render_samples(render_samples), MAX_CLASTER(MAX_CLASTER)
-{}
+	: viewport_samples(viewport_samples), render_samples(render_samples), MAX_CLASTER(MAX_CLASTER > 256 ? 256 : MAX_CLASTER)
+{
+	if (MAX_CLASTER > 256)
+		cout << "GPU CAN'T HANDLE THIS CLASTER_SIZE: " << MAX_CLASTER << '\n'
+		<< "MAX_CLASTER SET TO 256 \n"
+		<< "To change max claster on gpu go to 'Shader.frag', line: 10, and change array size \n";
+}
 
 void Render::choose_claster_size(const WindowProp& window_prop)
 {
@@ -31,7 +36,7 @@ void Render::choose_claster_size(const WindowProp& window_prop)
 		claster_size = 1;
 }
 
-void Render::set_uniforms(Shader& shader, const WindowProp& window_prop, const Ini& setup, const Camera& camera)
+void Render::set_uniforms(Shader& shader, const WindowProp& window_prop, const Ini& setup, const Camera& camera, const Texture& lol)
 {
 	shader.setUniform("light_dir", setup.light_dir);
 
@@ -47,15 +52,16 @@ void Render::set_uniforms(Shader& shader, const WindowProp& window_prop, const I
 
 	shader.setUniform("render", this->rendering);
 	shader.setUniform("samples", this->claster_size);
-	/*vector<Vector2f> seeds(claster_size, Vector2f(0, 0));
+
+	vector<Vector3f> seeds(claster_size, Vector3f(0, 0, 0));
 	for (int i = 0; i < claster_size; i++)
-		seeds[i] = Vector2f(rand() % 200000 - 100000, rand() % 200000 - 100000);*/
-	Vector2f seeds[128];
-	for (int i = 0; i < 128; i++)
-		seeds[i] = Vector2f(rand() % 200000 - 100000, rand() % 200000 - 100000);
+		seeds[i] = Vector3f(
+			(rand() % 100000),
+			(rand() % 100000),
+			(rand() % 100000)
+		);
 
-	shader.setUniform("seeds", seeds);
-
+	shader.setUniformArray("seeds", &seeds[0], claster_size);
 }
 
 bool Render::save_result(const ImageAccurate& render_dump, const Clock& render_elapsed_time, const Ini& setup)

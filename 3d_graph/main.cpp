@@ -25,11 +25,11 @@ int main()
 {
 	srand(time(NULL));
 
-	Render render(1, 2048, 64);
+	Render render(4, 2048, 64);
 	Ini setup(1200, 800, Vector3f(0.6, 0.75, -1.0), 8, 32, "D:/Ainstall/render/");
 	WindowProp window_prop(setup.w, setup.h);
 	InfoOutput info_output("Arial.ttf", true);
-	Camera camera(0.5, 0.3, 1, 620, 1, Vector3f(8, -23, 7), Vector3f(0, 12, 101));
+	Camera camera(0.5, 0.3, 1, 620, 1, Vector3f(15, -41, 44), Vector3f(0, 42, 111));
 	ImageAccurate render_dump(setup.h, vector<Vector3<long double>>(setup.w, Vector3<long double>(0, 0, 0)));
 
 #pragma region shader
@@ -122,7 +122,7 @@ int main()
 		camera.MoveCamera();
 
 		render.choose_claster_size(window_prop);
-		render.set_uniforms(shader, window_prop, setup, camera);
+		render.set_uniforms(shader, window_prop, setup, camera, sky);
 
 		window.draw(filler, &shader);
 		window_prop.preFrame.update(window);
