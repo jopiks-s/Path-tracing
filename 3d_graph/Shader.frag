@@ -26,6 +26,7 @@ uniform sampler2D sky;
 
 ///////////////////////////////////////////////
 
+const float PI = 3.14159265;
 const int object_amount = 7;
 
 int rand_counter = 0;
@@ -50,48 +51,33 @@ float random_f(in vec2 uv, in vec3 ro, in vec3 rd, in bool full_range)
 	ro = vec3(int(ro.x) % 10000, int(ro.y) % 10000, int(ro.z) % 10);
 	rd = Normalize(rd);
 
-	float rand_v = fract(sin(rand_counter + frame * ro.z + dot(rd.xy * uv, vec2(12.9898, 78.233) * seed.xy * rd.z))
+	float value = fract(sin(rand_counter + frame * ro.z + dot(rd.xy * uv, vec2(12.9898, 78.233) * seed.xy * rd.z))
 														   *
 														   (43758.5453123 + ro.x + ro.y - seed.z));
-
-	if(full_range)
-		rand_v = rand_v * 2 - 1;
-
+	
 	rand_counter+= seed.x - (seed.y / seed.z);
-	return rand_v;
-}
-vec3 random_v3(in vec2 uv, in vec3 ro, in vec3 rd, bool full_range, bool normalized)
-{
-	bool correct = false;
-	vec3 ret;
-	while (!correct)
-	{
-		ret = vec3(random_f(uv, ro, rd, full_range), 
-				   random_f(uv, ro, rd, full_range), 
-				   random_f(uv, ro, rd, full_range));
-		if (Length(ret) < 1.0)
-			correct = true;
-	}
+	if(full_range)
+		value = value * 2 - 1;
 
-	if (normalized)
-		return Normalize(ret);
-	return ret;
+	return value;
 }
-vec2 random_v2(in vec2 uv, in vec3 ro, in vec3 rd, bool full_range, bool normalized)
+vec2 RandomInCircle(in vec2 uv, in vec3 ro, in vec3 rd)
 {
-	bool correct = false;
-	vec2 ret;
-	while (!correct)
-	{
-		ret = vec2(random_f(uv, ro, rd, full_range), 
-				   random_f(uv, ro, rd, full_range));
-		if (Length(ret) < 1.0)
-			correct = true;
-	}
-
-	if (normalized)
-		return Normalize(ret);
-	return ret;
+	float angle = random_f(uv, ro, rd, false) * 2.0 * PI;
+	float r = sqrt(random_f(uv, ro, rd, false));
+	return vec2(r * cos(angle), r * sin(angle));
+}
+vec3 RandomOnSphere(in vec2 uv, in vec3 ro, in vec3 rd)
+{
+	float u1 = random_f(uv, ro, rd, false),
+		  u2 = random_f(uv, ro, rd, false);
+	float latitude = acos(2.0 * u1 - 1) - PI / 2.0;
+	float longitude = 2.0 * PI * u2;
+	return vec3(
+				cos(latitude) * cos(longitude),
+				cos(latitude) * sin(longitude),
+				sin(latitude)
+	);
 }
 
 vec3 color_correction(in vec3 col) { return clamp(vec3(pow(col.r, 0.45), pow(col.g, 0.45), pow(col.b, 0.45))); }
@@ -265,7 +251,7 @@ vec3 castRay(in vec3 ro, in vec3 rd, in Object obj[object_amount], in vec2 uv)
 		{
 			ro += rd * obj[min].distance.x + obj[min].normal*0.001; // obj[min].normal*0.001 - fix artefacts
 
-			vec3 random_rd = random_v3(uv, ro, rd, true, true);
+			vec3 random_rd = RandomOnSphere(uv, ro, rd);
 			random_rd = Normalize(random_rd * dot(obj[min].normal, random_rd));
 
 			vec3 specular_rd = reflect(rd, obj[min].normal);
@@ -280,7 +266,7 @@ vec3 castRay(in vec3 ro, in vec3 rd, in Object obj[object_amount], in vec2 uv)
 			vec3 refract_rd = refract(rd, obj[min].normal, obj[min].mat.Refraction);
 
 			obj[min].CalculateObjectGraphic(roY_far, -refract_rd);
-			vec3 random_rd = random_v3(uv, ro, rd, true, true);
+			vec3 random_rd = RandomOnSphere(uv, ro, rd);
 			random_rd = Normalize(random_rd * dot(obj[min].normal, random_rd));
 
 			rd = Normalize(mix(refract_rd, random_rd, obj[min].mat.Roughness));
@@ -309,7 +295,7 @@ vec3 MultiTrace(in vec2 uv)
 	vec3 col;
 	for (int i = 0; i < samples; i++)
 	{
-		vec2 focus_coord = random_v2(uv, world_origin, Rotate(Normalize(vec3(1, uv)), camera_rotation), true, false)
+		vec2 focus_coord = RandomInCircle(uv, world_origin, Rotate(Normalize(vec3(1, uv)), camera_rotation))
 						   *
 						   (focal_length / aperture);
 
