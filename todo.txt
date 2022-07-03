@@ -1,1 +1,0 @@
-. generate point on sphere instead of cube

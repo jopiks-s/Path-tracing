@@ -27,7 +27,7 @@ uniform sampler2D sky;
 ///////////////////////////////////////////////
 
 const float PI = 3.14159265;
-const int object_amount = 7;
+const int object_amount = 5;
 
 int rand_counter = 0;
 int sample_pointer = 0;
@@ -80,8 +80,6 @@ vec3 RandomOnSphere(in vec2 uv, in vec3 ro, in vec3 rd)
 	);
 }
 
-vec3 color_correction(in vec3 col) { return clamp(vec3(pow(col.r, 0.45), pow(col.g, 0.45), pow(col.b, 0.45))); }
-
 vec3 Rotate(in vec3 v, in vec3 fi)
 {
 	vec3 ret = v;
@@ -101,12 +99,21 @@ vec3 Rotate(in vec3 v, in vec3 fi)
 	return ret;
 }
 
-vec3 GetSky(in vec3 rd, in int sun_index = 0)
+vec3 ToneMapping(in vec3 col) 
+{ 
+	float white = 4.0;
+	float exposure = 4;
+	col *= white * exposure;
+	col = (col * (1.0 + col / white / white)) / (1.0 + col);
+	return col;
+}
+
+vec3 GetSky(in vec3 rd, in int sun_index = 1)
 {
 	if (sun_index == 0)
 	{
-		vec3 sky_col = color_correction(vec3(0.3, 0.6, 1.0));
-		vec3 sun_col = color_correction(vec3(0.6353, 0.5333, 0.4902));
+		vec3 sky_col = vec3(0.3, 0.6, 1.0) * 0.3;
+		vec3 sun_col = vec3(0.95, 0.9, 1.0);
 		sun_col *= pow(clamp(-dot(rd, light_dir)), pow(2, sun_size));
 		return clamp(sky_col * 0.5 + sun_col);
 	}
@@ -115,11 +122,13 @@ vec3 GetSky(in vec3 rd, in int sun_index = 0)
 		vec2 sky_uv = vec2(atan(rd.x, rd.y), asin(-rd.z) * 2);
 		sky_uv /= 3.14;
 		sky_uv = sky_uv * 0.5 + 0.5;
-		vec3 sky_col = texture(sky, sky_uv).rgb;
-		vec3 sun_col = color_correction(vec3(1, 1, 0.8));
-		sun_col *= pow(clamp(-dot(rd, light_dir)), 256 / 2);
+		vec3 sky_col = texture(sky, sky_uv).rgb * 0.3;
+		vec3 sun_col = vec3(1, 1, 0.8);
+		sun_col *= pow(clamp(-dot(rd, light_dir)), pow(2, sun_size));
 		return sky_col + sun_col;
 	}
+	if(sun_index == 2)
+		return vec3(0,0,0);
 }
 
 //c - circle
@@ -185,8 +194,6 @@ struct Object
 	Material mat;
 	vec3 normal;
 	vec2 distance;
-
-	void color_ini() { mat.color = color_correction(mat.color); }
 
 	void CalculateObjectGraphic(in vec3 ro, in vec3 rd)
 	{
@@ -283,11 +290,9 @@ vec3 MultiTrace(in vec2 uv)
 	obj[1] = Object(0, vec3(3, 10, 0.5), 1.5, Material(0, vec3(1.0, 0.2, 0.2), 0.2, 0, 1), vec3(0.0), vec2(0.0));		//sphere
 	obj[2] = Object(1, vec3(-5, 3, 4), 2.5, Material(0, vec3(0.3, 0.1, 0.3), 0.8, 0, 1), vec3(0.0), vec2(0.0));			//cub
 	obj[3] = Object(1, vec3(-15, 7, 2), 2.5, Material(0, vec3(0.1, 1, 0), 0.7, 0, 1), vec3(0.0), vec2(0.0));			//cub
-	obj[4] = Object(0, vec3(3, 5, 7), 2.5, Material(1, vec3(1, 1, 1), 1, 0, 1), vec3(0.0), vec2(0.0));					//lamp
-	obj[5] = Object(0, vec3(-10, -3, 6.5), 2.5, Material(1, vec3(1, 1, 1), 1, 0, 1), vec3(0.0), vec2(0.0));				//lamp
-	obj[6] = Object(0, vec3(10, 5, 2), 1.5, Material(0, vec3(0.7, 0.7, 0.7), 0, 0.1, 0.74), vec3(0.0), vec2(0.0));	//sphere
-	for (int i = 0; i < obj.length(); i++)
-		obj[i].color_ini();
+	//obj[4] = Object(0, vec3(3, 5, 7), 2.5, Material(1, vec3(1, 1, 1), 1, 0, 1), vec3(0.0), vec2(0.0));					//lamp
+	//obj[5] = Object(0, vec3(-10, -3, 6.5), 2.5, Material(1, vec3(1, 1, 1), 1, 0, 1), vec3(0.0), vec2(0.0));				//lamp
+	obj[4] = Object(0, vec3(10, 5, 2), 1.5, Material(0, vec3(0.7, 0.7, 0.7), 0, 0.1, 0.74), vec3(0.0), vec2(0.0));	//sphere
 
 	vec3 matrix_origin = vec3(0, -uv * camera_size);
 	vec3 world_origin = camera_origin + Rotate(matrix_origin, camera_rotation);
@@ -312,7 +317,7 @@ void main()
 	vec2 uv = gl_FragCoord.xy / resolution - 0.5;
 	uv.x *= aspect_ratio;
 
-	vec3 curr_col = MultiTrace(uv);
+	vec3 curr_col = ToneMapping(MultiTrace(uv));
 
 	if (render)
 		gl_FragColor = vec4(curr_col, 1);

@@ -25,11 +25,11 @@ int main()
 {
 	srand(time(NULL));
 
-	Render render(4, 2048, 64);
-	Ini setup(1200, 800, Vector3f(0.6, 0.75, -1.0), 8, 32, "D:/Ainstall/render/");
+	Render render(4, 256, 64);
+	Ini setup(1920, 1080, Vector3f(0.6, 0.75, -0.3), 10, 32, "D:/Ainstall/render/"); //0.6, 0.75, -1.0
 	WindowProp window_prop(setup.w, setup.h);
-	InfoOutput info_output("Arial.ttf", true);
-	Camera camera(0.5, 0.3, 1, 620, 1, Vector3f(15, -41, 44), Vector3f(0, 42, 111));
+	InfoOutput info_output("Arial.ttf", Color::Black, true);
+	Camera camera(0.5, 0.3, 1, 620, 1, Vector3f(18, 16, 5), Vector3f(0, 12, 213));
 	ImageAccurate render_dump(setup.h, vector<Vector3<long double>>(setup.w, Vector3<long double>(0, 0, 0)));
 
 #pragma region shader
@@ -78,6 +78,7 @@ int main()
 			if (event.type == Event::MouseButtonPressed)
 			{
 				window_prop.focus = true;
+				window_prop.updated = true;
 				window.setMouseCursorVisible(false);
 
 				if (!render.rendering)
@@ -102,6 +103,7 @@ int main()
 						render.rendering = true;
 						window_prop.render_elapsed_time.restart();
 						camera.Disable();
+						render_dump = ImageAccurate(setup.h, vector<Vector3<long double>>(setup.w, Vector3<long double>(0, 0, 0)));
 					}
 
 					if (event.key.code == Keyboard::I)
@@ -129,13 +131,19 @@ int main()
 
 		info_output.draw(window, setup, camera, render);
 
+		if (!window_prop.updated)
+		{
+			draw_img(window, Graphic::VectorToImage(render_dump, setup));
+			info_output.draw_render_done(window, setup);
+		}
+
 		if (render.rendering)
 		{
 			if (!info_output.disable)
 				draw_img(window, Graphic::VectorToImage(render_dump, setup));
 
 			window_prop.render_frame += render.claster_size;
-			info_output.render_draw(window, setup, window_prop.render_frame, window_prop.render_elapsed_time, render);
+			info_output.draw_render(window, setup, window_prop.render_frame, window_prop.render_elapsed_time, render);
 
 			Graphic::RenderApproximate(render_dump, window_prop.preFrame.copyToImage(), setup, render);
 
@@ -145,9 +153,10 @@ int main()
 
 				window_prop.render_frame = 0;
 				window_prop.fixed_frame_counter = 1;
+				if (!window_prop.focus)
+					window_prop.updated = false;
 				render.rendering = false;
 				camera.Enable();
-				render_dump = ImageAccurate(setup.h, vector<Vector3<long double>>(setup.w, Vector3<long double>(0, 0, 0)));
 			}
 		}
 

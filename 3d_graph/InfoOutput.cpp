@@ -5,7 +5,7 @@
 #include "Camera.h"
 #include "Render.h"
 
-InfoOutput::InfoOutput(string font_path, bool disable) : disable(disable)
+InfoOutput::InfoOutput(string font_path, Color font_color, bool disable) : font_color(font_color), disable(disable)
 {
 	font = Font();
 	if (!font.loadFromFile(font_path))
@@ -43,7 +43,7 @@ bool InfoOutput::draw(RenderWindow& window, const Ini& setup, const Camera& came
 	Text setup_t;
 	setup_t.setCharacterSize(24);
 	setup_t.setFont(font);
-	setup_t.setFillColor(Color::White);
+	setup_t.setFillColor(font_color);
 	ostringstream output_str;
 	output_str <<
 		"W : " << (setup.w) << "; H : " << (setup.h) << "\n"
@@ -70,7 +70,7 @@ bool InfoOutput::draw(RenderWindow& window, const Ini& setup, const Camera& came
 	return true;
 }
 
-bool InfoOutput::render_draw(RenderWindow& window, const Ini& setup, int sample, const Clock& elapsed_time, const Render& render)
+bool InfoOutput::draw_render(RenderWindow& window, const Ini& setup, int sample, const Clock& elapsed_time, const Render& render)
 {
 	if (disable)
 		return false;
@@ -86,13 +86,27 @@ bool InfoOutput::render_draw(RenderWindow& window, const Ini& setup, int sample,
 	Text render_t;
 	render_t.setCharacterSize(24);
 	render_t.setFont(font);
-	render_t.setFillColor(Color::White);
+	render_t.setFillColor(font_color);
 	render_t.setString(output_str.str());
 	render_t.setOrigin(render_t.getGlobalBounds().width, 0);
 	render_t.setPosition(setup.w - 10, 10);
 
 	window.draw(render_t);
-	window.display();
+
+	return true;
+}
+
+bool InfoOutput::draw_render_done(RenderWindow& window, const Ini& setup)
+{
+	Text render_done_t;
+	render_done_t.setCharacterSize(56);
+	render_done_t.setFont(font);
+	render_done_t.setFillColor(font_color);
+	render_done_t.setString("Render done!");
+	render_done_t.setOrigin(render_done_t.getLocalBounds().width / 2, render_done_t.getLocalBounds().height / 2);
+	render_done_t.setPosition(setup.w / 2, setup.h / 2);
+
+	window.draw(render_done_t);
 
 	return true;
 }

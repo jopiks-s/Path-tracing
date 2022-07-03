@@ -11,7 +11,8 @@ public:
 	int frame = 0, render_frame = 0, fixed_frame_counter = 1;
 	Clock tick, render_elapsed_time;
 
-	bool focus = false;
+	bool focus = false,
+		updated = true;
 
 	Texture preFrame;
 
