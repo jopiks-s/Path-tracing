@@ -15,7 +15,8 @@ public:
 
 	bool focus = false,
 		updated = true,
-		fullscrean = false;
+		fullscrean = false,
+		resizable;
 
 	Texture preFrame;
 

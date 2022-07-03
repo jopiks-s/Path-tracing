@@ -4,6 +4,8 @@
 WindowProp::WindowProp(int w, int h)
 {
 	preFrame.create(w, h);
+	if (w != 1920 || h != 1080)
+		resizable = false;
 }
 
 void WindowProp::calculate_fps(RenderWindow& window, string window_title)
@@ -15,8 +17,11 @@ void WindowProp::calculate_fps(RenderWindow& window, string window_title)
 
 void WindowProp::enable_fullscrean(RenderWindow& window, const Ini& setup)
 {
-	if (fullscrean)
+	if (fullscrean || !resizable)
+	{
+		cout << "Can't enable fullscrean\n";
 		return;
+	}
 
 	window.create(VideoMode(setup.w, setup.h), "bebe", Style::Fullscreen);
 	fullscrean = true;
@@ -28,7 +33,7 @@ void WindowProp::disable_fullscrean(RenderWindow& window, const Ini& setup)
 	if (!fullscrean)
 		return;
 
-	window.create(VideoMode(setup.w, setup.h), "bebe", Style::Default);
+	window.create(VideoMode(setup.w, setup.h), "bebe", resizable ? Style::Default : Style::Titlebar | Style::Close);
 	fullscrean = false;
 	window.setMouseCursorVisible(true);
 }

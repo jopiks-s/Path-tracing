@@ -20,6 +20,7 @@ public:
 
 	bool disable;
 
+	//receive camera_rotation in degree
 	Camera(double sensitivity, double camera_speed, double focal_length, double aperture, double camera_size, Vector3f camera_origin, Vector3f camera_rotation, bool disable = false);
 
 	bool RotateCamera(const Event& e, const RenderWindow& window, const Ini& setup);

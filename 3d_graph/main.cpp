@@ -25,11 +25,11 @@ int main()
 {
 	srand(time(NULL));
 
-	Render render(4, 256, 64);
-	Ini setup(1920, 1080, Vector3f(0.5, 0.75, -0.35), 8, 32, "D:/Ainstall/render/"); //0.6, 0.75, -1.0
+	Render render(1, 256, 64, 8, 32);
+	Ini setup(1920, 1080, Vector3f(0.5, 0.75, -0.35), "D:/Ainstall/render/");
 	WindowProp window_prop(setup.w, setup.h);
-	InfoOutput info_output("Arial.ttf", Color::Black, true);
-	Camera camera(0.5, 0.3, 1, 620, 1, Vector3f(-30,0,15), Vector3f(0,0,0));
+	InfoOutput info_output("Arial.ttf", Color::White, true);
+	Camera camera(0.5, 0.3, 1, 620, 1, Vector3f(-30,0,7.5), Vector3f(0,-8,0));
 	ImageAccurate render_dump(setup.h, vector<Vector3<long double>>(setup.w, Vector3<long double>(0, 0, 0)));
 
 #pragma region shader
@@ -39,14 +39,10 @@ int main()
 
 	RectangleShape filler(Vector2f(setup.w, setup.h));
 	filler.setFillColor(Color::Cyan);
-
-	shader.setUniform("max_reflect", setup.max_reflect);
-	shader.setUniform("sun_size", setup.sun_size);
-	shader.setUniform("resolution", Vector2f(setup.w, setup.h));
 #pragma endregion
 
 #pragma region window
-	RenderWindow window(VideoMode(setup.w, setup.h), "bebe", Style::Default);
+	RenderWindow window(VideoMode(setup.w, setup.h), "bebe", window_prop.resizable ? Style::Default : Style::Titlebar | Style::Close);
 	window.setFramerateLimit(120);
 #pragma endregion
 
@@ -105,9 +101,6 @@ int main()
 
 				if (event.type == Event::KeyPressed)
 				{
-					if (!window_prop.focus)
-						continue;
-
 					if (event.key.code == Keyboard::Enter)
 						window_prop.enable_fullscrean(window, setup);
 					if (event.key.code == Keyboard::Escape)
@@ -118,17 +111,23 @@ int main()
 						window.setMouseCursorVisible(true);
 					}
 
-					if (event.key.code == Keyboard::R)
-					{
-						cout << "Start render:\n";
-						render.rendering = true;
-						window_prop.render_elapsed_time.restart();
-						camera.Disable();
-						render_dump = ImageAccurate(setup.h, vector<Vector3<long double>>(setup.w, Vector3<long double>(0, 0, 0)));
-					}
-
 					if (event.key.code == Keyboard::I)
 						info_output.Switch();
+
+					if (!render.rendering)
+					{
+						if (event.key.code == Keyboard::R)
+						{
+							cout << "Start render:\n";
+							render.rendering = true;
+							window_prop.render_elapsed_time.restart();
+							camera.Disable();
+							render_dump = ImageAccurate(setup.h, vector<Vector3<long double>>(setup.w, Vector3<long double>(0, 0, 0)));
+						}
+
+						if (event.key.code == Keyboard::Z)
+							render.switch_image_quality();
+					}
 				}
 				if (camera.KeyboardInputRecord(event))
 					window_prop.fixed_frame_counter = 1;

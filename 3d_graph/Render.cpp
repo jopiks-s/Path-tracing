@@ -4,8 +4,9 @@
 #include "WindowProp.h"
 #include "Camera.h"
 
-Render::Render(int viewport_samples, int render_samples, int MAX_CLASTER)
-	: viewport_samples(viewport_samples), render_samples(render_samples), MAX_CLASTER(MAX_CLASTER > 256 ? 256 : MAX_CLASTER)
+Render::Render(int viewport_samples, int render_samples, int MAX_CLASTER, int sun_size, int max_reflect)
+	: viewport_samples(viewport_samples), render_samples(render_samples), MAX_CLASTER(MAX_CLASTER > 256 ? 256 : MAX_CLASTER),
+	sun_size(sun_size), max_reflect(max_reflect)
 {
 	if (MAX_CLASTER > 256)
 		cout << "GPU CAN'T HANDLE THIS CLASTER_SIZE: " << MAX_CLASTER << '\n'
@@ -13,9 +14,24 @@ Render::Render(int viewport_samples, int render_samples, int MAX_CLASTER)
 		<< "To change max claster on gpu go to 'Shader.frag', line: 10, and change array size \n";
 }
 
+void Render::switch_image_quality()
+{
+	if (simplified)
+		max_reflect = max_reflect_buffer;
+	else
+	{
+		max_reflect_buffer = max_reflect;
+		max_reflect = 1;
+	}
+
+	simplified = !simplified;
+}
+
 void Render::choose_claster_size(const WindowProp& window_prop)
 {
-	if (rendering)
+	if (simplified)
+		claster_size = 1;
+	else if (rendering)
 	{
 		bool correct = false;
 		claster_size = MAX_CLASTER;
@@ -28,7 +44,7 @@ void Render::choose_claster_size(const WindowProp& window_prop)
 		} while (!correct);
 	}
 	else if (window_prop.focus)
-		if (window_prop.fixed_frame_counter < 10)
+		if (window_prop.fixed_frame_counter < 30)
 			claster_size = 1;
 		else
 			claster_size = viewport_samples;
@@ -38,6 +54,7 @@ void Render::choose_claster_size(const WindowProp& window_prop)
 
 void Render::set_uniforms(Shader& shader, const WindowProp& window_prop, const Ini& setup, const Camera& camera, const Texture& lol)
 {
+	shader.setUniform("resolution", Vector2f(setup.w, setup.h));
 	shader.setUniform("light_dir", setup.light_dir);
 
 	shader.setUniform("frame", window_prop.frame);
@@ -52,6 +69,8 @@ void Render::set_uniforms(Shader& shader, const WindowProp& window_prop, const I
 
 	shader.setUniform("render", this->rendering);
 	shader.setUniform("samples", this->claster_size);
+	shader.setUniform("sun_size", this->sun_size);
+	shader.setUniform("max_reflect", this->max_reflect);
 
 	vector<Vector3f> seeds(claster_size, Vector3f(0, 0, 0));
 	for (int i = 0; i < claster_size; i++)

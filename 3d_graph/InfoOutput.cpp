@@ -47,7 +47,7 @@ bool InfoOutput::draw(RenderWindow& window, const Ini& setup, const Camera& came
 	ostringstream output_str;
 	output_str <<
 		"W : " << (setup.w) << "; H : " << (setup.h) << "\n"
-		<< "Maximum reflect : " << setup.max_reflect << "\n"
+		<< "Maximum reflect : " << render.max_reflect << "\n"
 		<< "Viewport samples : " << render.viewport_samples << "\n"
 		<< "Render samples : " << render.render_samples << "\n"
 		<< "Render path : \"" << setup.render_path << "\"" << "\n"
