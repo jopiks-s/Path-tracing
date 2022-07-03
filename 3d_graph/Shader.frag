@@ -27,7 +27,7 @@ uniform sampler2D sky;
 ///////////////////////////////////////////////
 
 const float PI = 3.14159265;
-const int object_amount = 5;
+const int object_amount = 7;
 
 int rand_counter = 0;
 int sample_pointer = 0;
@@ -110,25 +110,29 @@ vec3 ToneMapping(in vec3 col)
 
 vec3 GetSky(in vec3 rd, in int sun_index = 1)
 {
-	if (sun_index == 0)
-	{
-		vec3 sky_col = vec3(0.3, 0.6, 1.0) * 0.3;
-		vec3 sun_col = vec3(0.95, 0.9, 1.0);
-		sun_col *= pow(clamp(-dot(rd, light_dir)), pow(2, sun_size));
-		return clamp(sky_col * 0.5 + sun_col);
-	}
+	if(sun_index == 0)
+		return vec3(0,0,0);
 	if (sun_index == 1)
+	{
+		vec3 sky_col = vec3(0.3, 0.6, 1.0) * 0.2;
+		vec3 sun_col = vec3(0.95, 0.9, 1.0);
+
+		sun_col *= pow(clamp(-dot(rd, light_dir)), pow(2, sun_size));
+
+		return clamp(sky_col + sun_col);
+	}
+	if (sun_index == 2)
 	{
 		vec2 sky_uv = vec2(atan(rd.x, rd.y), asin(-rd.z) * 2);
 		sky_uv /= 3.14;
 		sky_uv = sky_uv * 0.5 + 0.5;
+
 		vec3 sky_col = texture(sky, sky_uv).rgb * 0.3;
 		vec3 sun_col = vec3(1, 1, 0.8);
+
 		sun_col *= pow(clamp(-dot(rd, light_dir)), pow(2, sun_size));
-		return sky_col + sun_col;
+		return clamp(sky_col + sun_col);
 	}
-	if(sun_index == 2)
-		return vec3(0,0,0);
 }
 
 //c - circle
@@ -177,7 +181,7 @@ vec2 box_intersect(in vec3 ro, in vec3 rd, in vec3 bo, in vec3 bs, out vec3 outN
 
 struct Material
 {
-	int type;
+	int type; //0 - default, 1 - lamp
 	vec3 color;
 	float Roughness;
 	float Specular;
@@ -286,13 +290,11 @@ vec3 castRay(in vec3 ro, in vec3 rd, in Object obj[object_amount], in vec2 uv)
 vec3 MultiTrace(in vec2 uv)
 {
 	Object obj[object_amount];
-	obj[0] = Object(2, vec3(0.0), 1, Material(0, vec3(0.3, 0.4, 0.1), 0.9, 0, 1), vec3(0, 0, 1), vec2(0.0));			//plane
-	obj[1] = Object(0, vec3(3, 10, 0.5), 1.5, Material(0, vec3(1.0, 0.2, 0.2), 0.2, 0, 1), vec3(0.0), vec2(0.0));		//sphere
-	obj[2] = Object(1, vec3(-5, 3, 4), 2.5, Material(0, vec3(0.3, 0.1, 0.3), 0.8, 0, 1), vec3(0.0), vec2(0.0));			//cub
-	obj[3] = Object(1, vec3(-15, 7, 2), 2.5, Material(0, vec3(0.1, 1, 0), 0.7, 0, 1), vec3(0.0), vec2(0.0));			//cub
-	//obj[4] = Object(0, vec3(3, 5, 7), 2.5, Material(1, vec3(1, 1, 1), 1, 0, 1), vec3(0.0), vec2(0.0));					//lamp
-	//obj[5] = Object(0, vec3(-10, -3, 6.5), 2.5, Material(1, vec3(1, 1, 1), 1, 0, 1), vec3(0.0), vec2(0.0));				//lamp
-	obj[4] = Object(0, vec3(10, 5, 2), 1.5, Material(0, vec3(0.7, 0.7, 0.7), 0, 0.1, 0.74), vec3(0.0), vec2(0.0));	//sphere
+	obj[0] = Object(1, vec3(0, 0, -7.5), 15, Material(0, vec3(0.9),     0.5, 0,0),	vec3(0),vec2(0));		//bottom
+	obj[1] = Object(1, vec3(0, 0, 52.5), 15, Material(0, vec3(0.9),     0.5, 0,0),	vec3(0),vec2(0));		//top
+	obj[2] = Object(1, vec3(30, 0, 22.5), 15, Material(0, vec3(0.9),    0.5, 0,0),	vec3(0),vec2(0));		//front
+	obj[3] = Object(1, vec3(0, -30, 22.5), 15, Material(0, vec3(1,0,0), 0.5, 0,0),	vec3(0),vec2(0));	//left
+	obj[4] = Object(1, vec3(0, 30, 22.5), 15, Material(0, vec3(0,1,0),  0.5, 0,0),	vec3(0),vec2(0));	//right
 
 	vec3 matrix_origin = vec3(0, -uv * camera_size);
 	vec3 world_origin = camera_origin + Rotate(matrix_origin, camera_rotation);

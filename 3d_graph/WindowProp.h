@@ -5,6 +5,8 @@
 using namespace sf;
 using namespace std;
 
+class Ini;
+
 class WindowProp
 {
 public:
@@ -12,10 +14,13 @@ public:
 	Clock tick, render_elapsed_time;
 
 	bool focus = false,
-		updated = true;
+		updated = true,
+		fullscrean = false;
 
 	Texture preFrame;
 
 	WindowProp(int w, int h);
 	void calculate_fps(RenderWindow& window, string window_title);
+	void enable_fullscrean(RenderWindow& window, const Ini& setup);
+	void disable_fullscrean(RenderWindow& window, const Ini& setup);
 };

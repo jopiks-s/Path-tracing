@@ -26,10 +26,10 @@ int main()
 	srand(time(NULL));
 
 	Render render(4, 256, 64);
-	Ini setup(1920, 1080, Vector3f(0.6, 0.75, -0.3), 10, 32, "D:/Ainstall/render/"); //0.6, 0.75, -1.0
+	Ini setup(1920, 1080, Vector3f(0.5, 0.75, -0.35), 8, 32, "D:/Ainstall/render/"); //0.6, 0.75, -1.0
 	WindowProp window_prop(setup.w, setup.h);
 	InfoOutput info_output("Arial.ttf", Color::Black, true);
-	Camera camera(0.5, 0.3, 1, 620, 1, Vector3f(18, 16, 5), Vector3f(0, 12, 213));
+	Camera camera(0.5, 0.3, 1, 620, 1, Vector3f(-30,0,15), Vector3f(0,0,0));
 	ImageAccurate render_dump(setup.h, vector<Vector3<long double>>(setup.w, Vector3<long double>(0, 0, 0)));
 
 #pragma region shader
@@ -46,10 +46,7 @@ int main()
 #pragma endregion
 
 #pragma region window
-
-	ContextSettings con_set;
-	con_set.antialiasingLevel = 8;
-	RenderWindow window(VideoMode(setup.w, setup.h), "bebe", Style::Default, con_set);
+	RenderWindow window(VideoMode(setup.w, setup.h), "bebe", Style::Default);
 	window.setFramerateLimit(120);
 #pragma endregion
 
@@ -71,15 +68,28 @@ int main()
 
 			if (event.type == Event::LostFocus)
 			{
+				window_prop.disable_fullscrean(window, setup);
 				window_prop.focus = false;
 				camera.Disable();
+
 				window.setMouseCursorVisible(true);
 			}
-			if (event.type == Event::MouseButtonPressed)
+			if (event.type == Event::MouseButtonPressed ||
+				event.type == Event::GainedFocus)
 			{
 				window_prop.focus = true;
 				window_prop.updated = true;
+
 				window.setMouseCursorVisible(false);
+
+				if (!render.rendering)
+					camera.Enable();
+			}
+			if (event.type == Event::Resized)
+			{
+				window_prop.enable_fullscrean(window, setup);
+				window_prop.focus = true;
+				window_prop.updated = true;
 
 				if (!render.rendering)
 					camera.Enable();
@@ -97,6 +107,17 @@ int main()
 				{
 					if (!window_prop.focus)
 						continue;
+
+					if (event.key.code == Keyboard::Enter)
+						window_prop.enable_fullscrean(window, setup);
+					if (event.key.code == Keyboard::Escape)
+					{
+						window_prop.disable_fullscrean(window, setup);
+						window_prop.focus = false;
+						camera.Disable();
+						window.setMouseCursorVisible(true);
+					}
+
 					if (event.key.code == Keyboard::R)
 					{
 						cout << "Start render:\n";
@@ -108,13 +129,6 @@ int main()
 
 					if (event.key.code == Keyboard::I)
 						info_output.Switch();
-
-					if (event.key.code == Keyboard::Escape)
-					{
-						window_prop.focus = false;
-						camera.Disable();
-						window.setMouseCursorVisible(true);
-					}
 				}
 				if (camera.KeyboardInputRecord(event))
 					window_prop.fixed_frame_counter = 1;
