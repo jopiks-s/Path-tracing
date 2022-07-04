@@ -25,21 +25,21 @@ int main()
 {
 	srand(time(NULL));
 
-	Render render(1, 256, 64, 8, 32);
-	Ini setup(1920, 1080, Vector3f(0.5, 0.75, -0.35), "D:/Ainstall/render/");
+	Render render(1, 256, 8, 256, 8, 32);
+	Ini setup(500, 500, Vector3f(0.5, 0.75, -0.35), "D:/Ainstall/render/");
 	WindowProp window_prop(setup.w, setup.h);
 	InfoOutput info_output("Arial.ttf", Color::White, true);
 	Camera camera(0.5, 0.3, 1, 620, 1, Vector3f(-30,0,7.5), Vector3f(0,-8,0));
 	ImageAccurate render_dump(setup.h, vector<Vector3<long double>>(setup.w, Vector3<long double>(0, 0, 0)));
 
-#pragma region shader
 	Shader shader;
 	if (!shader.loadFromFile("Shader.frag", Shader::Type::Fragment))
-		cout << "Can't load Shader.frag\n";
+		cout << "Can't load 'Shader.frag'\n";
 
+	////
 	RectangleShape filler(Vector2f(setup.w, setup.h));
-	filler.setFillColor(Color::Cyan);
-#pragma endregion
+	filler.setFillColor(Color::Magenta);
+	////
 
 #pragma region window
 	RenderWindow window(VideoMode(setup.w, setup.h), "bebe", window_prop.resizable ? Style::Default : Style::Titlebar | Style::Close);
@@ -119,7 +119,7 @@ int main()
 						if (event.key.code == Keyboard::R)
 						{
 							cout << "Start render:\n";
-							render.rendering = true;
+							render.StartRender(setup);
 							window_prop.render_elapsed_time.restart();
 							camera.Disable();
 							render_dump = ImageAccurate(setup.h, vector<Vector3<long double>>(setup.w, Vector3<long double>(0, 0, 0)));
@@ -136,9 +136,9 @@ int main()
 
 		camera.MoveCamera();
 
-		render.choose_claster_size(window_prop);
 		render.set_uniforms(shader, window_prop, setup, camera, sky);
 
+		//render.render_claster();
 		window.draw(filler, &shader);
 		window_prop.preFrame.update(window);
 
@@ -155,7 +155,7 @@ int main()
 			if (!info_output.disable)
 				draw_img(window, Graphic::VectorToImage(render_dump, setup));
 
-			window_prop.render_frame += render.claster_size;
+			window_prop.render_frame += render.samples_per_frame;
 			info_output.draw_render(window, setup, window_prop.render_frame, window_prop.render_elapsed_time, render);
 
 			Graphic::RenderApproximate(render_dump, window_prop.preFrame.copyToImage(), setup, render);

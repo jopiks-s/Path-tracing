@@ -161,6 +161,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Debug.cpp" />
     <ClCompile Include="Graphic.cpp" />
+    <ClCompile Include="ImageClaster.cpp" />
     <ClCompile Include="InfoOutput.cpp" />
     <ClCompile Include="Ini.cpp" />
     <ClCompile Include="main.cpp" />
@@ -172,6 +173,7 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Graphic.h" />
+    <ClInclude Include="ImageClaster.h" />
     <ClInclude Include="InfoOutput.h" />
     <ClInclude Include="Ini.h" />
     <ClInclude Include="Render.h" />

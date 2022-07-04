@@ -42,6 +42,9 @@
     <Filter Include="Исходные файлы\Scene\WindowProp">
       <UniqueIdentifier>{452419d3-c20e-4bc1-82a9-6d32fc74d370}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\Scene\Render\ImageClaster">
+      <UniqueIdentifier>{7a930d95-7a23-4fee-96c2-a2d8f3c000f9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -73,6 +76,9 @@
     </ClCompile>
     <ClCompile Include="WindowProp.cpp">
       <Filter>Исходные файлы\Scene\WindowProp</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageClaster.cpp">
+      <Filter>Исходные файлы\Scene\Render\ImageClaster</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -115,6 +121,9 @@
     </ClInclude>
     <ClInclude Include="WindowProp.h">
       <Filter>Исходные файлы\Scene\WindowProp</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageClaster.h">
+      <Filter>Исходные файлы\Scene\Render\ImageClaster</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

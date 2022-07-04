@@ -61,7 +61,7 @@ bool InfoOutput::draw(RenderWindow& window, const Ini& setup, const Camera& came
 		<< ((int)angle.z) << "*" << "\n"
 		<< "Camera focal lenght : " << camera.focal_length << "\n"
 		<< "Camera aperture : f/" << camera.aperture << "\n"
-		<< "Claster size : " << render.claster_size;
+		<< "Claster size : " << render.samples_per_frame;
 	setup_t.setString(output_str.str());
 	setup_t.setPosition(Vector2f(10, 10));
 
@@ -81,7 +81,7 @@ bool InfoOutput::draw_render(RenderWindow& window, const Ini& setup, int sample,
 	output_str <<
 		sample << " sample--\n" <<
 		"Elapsed time : " << time_str << "\n" <<
-		"Claster size : " << render.claster_size << "\n";
+		"Claster size : " << render.samples_per_frame << "\n";
 	cout << output_str.str();
 	Text render_t;
 	render_t.setCharacterSize(24);

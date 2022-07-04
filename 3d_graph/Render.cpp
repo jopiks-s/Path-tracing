@@ -4,14 +4,16 @@
 #include "WindowProp.h"
 #include "Camera.h"
 
-Render::Render(int viewport_samples, int render_samples, int MAX_CLASTER, int sun_size, int max_reflect)
-	: viewport_samples(viewport_samples), render_samples(render_samples), MAX_CLASTER(MAX_CLASTER > 256 ? 256 : MAX_CLASTER),
+Render::Render(int viewport_samples, int render_samples, int MAX_SAMPLES_PER_FRAME, int MAX_CLASTER_SIZE, int sun_size, int max_reflect)
+	: viewport_samples(viewport_samples), render_samples(render_samples),
+	MAX_SAMPLES_PER_FRAME(MAX_SAMPLES_PER_FRAME > 256 ? 256 : MAX_SAMPLES_PER_FRAME),
+	MAX_CLASTER_SIZE(MAX_CLASTER_SIZE),
 	sun_size(sun_size), max_reflect(max_reflect)
 {
-	if (MAX_CLASTER > 256)
-		cout << "GPU CAN'T HANDLE THIS CLASTER_SIZE: " << MAX_CLASTER << '\n'
-		<< "MAX_CLASTER SET TO 256 \n"
-		<< "To change max claster on gpu go to 'Shader.frag', line: 10, and change array size \n";
+	if (MAX_SAMPLES_PER_FRAME > 256)
+		cout << "GPU CAN'T HANDLE THIS SAMPLES PER FRAME: " << MAX_SAMPLES_PER_FRAME << '\n'
+		<< "SAMPLES_PER_FRAME SET TO 256 \n"
+		<< "To change max samples per frame on gpu go to 'Shader.frag', line: 10, and change array size \n";
 }
 
 void Render::switch_image_quality()
@@ -27,29 +29,62 @@ void Render::switch_image_quality()
 	simplified = !simplified;
 }
 
-void Render::choose_claster_size(const WindowProp& window_prop)
+void Render::choose_samples_amount(const WindowProp& window_prop)
 {
 	if (simplified)
-		claster_size = 1;
+		samples_per_frame = 1;
 	else if (rendering)
 	{
 		bool correct = false;
-		claster_size = MAX_CLASTER;
+		samples_per_frame = MAX_SAMPLES_PER_FRAME;
 		do
 		{
-			if (render_samples - window_prop.render_frame < claster_size)
-				claster_size /= 2;
+			if (render_samples - window_prop.render_frame < samples_per_frame)
+				samples_per_frame /= 2;
 			else
 				correct = true;
 		} while (!correct);
 	}
 	else if (window_prop.focus)
 		if (window_prop.fixed_frame_counter < 30)
-			claster_size = 1;
+			samples_per_frame = 1;
 		else
-			claster_size = viewport_samples;
+			samples_per_frame = viewport_samples;
 	else
-		claster_size = 1;
+		samples_per_frame = 1;
+}
+
+void Render::StartRender(const Ini& setup)
+{
+	if (simplified)
+		switch_image_quality();
+
+	int width_counter = ceil(float(setup.w) / MAX_CLASTER_SIZE);
+	int height_counter = ceil(float(setup.h) / MAX_CLASTER_SIZE);
+	clasters = vector<vector<ImageClaster>>(height_counter, vector<ImageClaster>(width_counter, ImageClaster()));
+
+	for (int y = 0; y < height_counter; y++)
+		for (int x = 0; x < width_counter; x++)
+		{
+			Vector2i block_position = Vector2i(x * MAX_CLASTER_SIZE, y * MAX_CLASTER_SIZE);
+			Vector2i block_size = Vector2i
+			(
+				x + 1 != width_counter ? MAX_CLASTER_SIZE : setup.w - (width_counter - 1) * MAX_CLASTER_SIZE,
+				y + 1 != height_counter ? MAX_CLASTER_SIZE : setup.h - (height_counter - 1) * MAX_CLASTER_SIZE
+			);
+			clasters[y][x].Create(block_position, block_size);
+		}
+	claster_pointer = &clasters[0][0];
+
+	cout << clasters.size() << '\n'
+		<<height_counter <<'\n'
+		<< ceil(float(setup.w) / MAX_CLASTER_SIZE) << '\n';
+	rendering = true;
+}
+
+void Render::render_claster()
+{
+
 }
 
 void Render::set_uniforms(Shader& shader, const WindowProp& window_prop, const Ini& setup, const Camera& camera, const Texture& lol)
@@ -67,20 +102,21 @@ void Render::set_uniforms(Shader& shader, const WindowProp& window_prop, const I
 	shader.setUniform("aperture", (float)camera.aperture);
 	shader.setUniform("camera_size", (float)camera.camera_size);
 
+	this->choose_samples_amount(window_prop);
 	shader.setUniform("render", this->rendering);
-	shader.setUniform("samples", this->claster_size);
+	shader.setUniform("samples", this->samples_per_frame);
 	shader.setUniform("sun_size", this->sun_size);
 	shader.setUniform("max_reflect", this->max_reflect);
 
-	vector<Vector3f> seeds(claster_size, Vector3f(0, 0, 0));
-	for (int i = 0; i < claster_size; i++)
+	vector<Vector3f> seeds(samples_per_frame, Vector3f(0, 0, 0));
+	for (int i = 0; i < samples_per_frame; i++)
 		seeds[i] = Vector3f(
 			(rand() % 100000),
 			(rand() % 100000),
 			(rand() % 100000)
 		);
 
-	shader.setUniformArray("seeds", &seeds[0], claster_size);
+	shader.setUniformArray("seeds", &seeds[0], samples_per_frame);
 }
 
 bool Render::save_result(const ImageAccurate& render_dump, const Clock& render_elapsed_time, const Ini& setup)
