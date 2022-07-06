@@ -39,7 +39,7 @@ void Render::choose_samples_amount(const WindowProp& window_prop)
 		samples_per_frame = MAX_SAMPLES_PER_FRAME;
 		do
 		{
-			if (render_samples - window_prop.render_frame < samples_per_frame)
+			if (render_samples - image_clasters.samples_counter < samples_per_frame)
 				samples_per_frame /= 2;
 			else
 				correct = true;
@@ -54,37 +54,55 @@ void Render::choose_samples_amount(const WindowProp& window_prop)
 		samples_per_frame = 1;
 }
 
-void Render::StartRender(const Ini& setup)
+void Render::StartRender(const Ini& setup, WindowProp& window_prop)
 {
 	if (simplified)
 		switch_image_quality();
 
-	int width_counter = ceil(float(setup.w) / MAX_CLASTER_SIZE);
-	int height_counter = ceil(float(setup.h) / MAX_CLASTER_SIZE);
-	clasters = vector<vector<ImageClaster>>(height_counter, vector<ImageClaster>(width_counter, ImageClaster()));
-
-	for (int y = 0; y < height_counter; y++)
-		for (int x = 0; x < width_counter; x++)
-		{
-			Vector2i block_position = Vector2i(x * MAX_CLASTER_SIZE, y * MAX_CLASTER_SIZE);
-			Vector2i block_size = Vector2i
-			(
-				x + 1 != width_counter ? MAX_CLASTER_SIZE : setup.w - (width_counter - 1) * MAX_CLASTER_SIZE,
-				y + 1 != height_counter ? MAX_CLASTER_SIZE : setup.h - (height_counter - 1) * MAX_CLASTER_SIZE
-			);
-			clasters[y][x].Create(block_position, block_size);
-		}
-	claster_pointer = &clasters[0][0];
-
-	cout << clasters.size() << '\n'
-		<<height_counter <<'\n'
-		<< ceil(float(setup.w) / MAX_CLASTER_SIZE) << '\n';
+	image_clasters.create_clasters(*this, setup);
+	update_preFrame(window_prop);
 	rendering = true;
 }
 
-void Render::render_claster()
+void Render::EndRender()
 {
+	rendering = false;
+}
 
+void Render::update_preFrame(WindowProp& window_prop)
+{
+	auto size = image_clasters.claster.getSize();
+	window_prop.preFrame.create(size.x, size.y);
+}
+
+bool Render::render_claster(RenderWindow& window, const Shader& shader, WindowProp& window_prop, const Ini& setup)
+{
+	window.draw(image_clasters.claster, &shader);
+	image_clasters.samples_counter += samples_per_frame;
+
+	if (image_clasters.samples_counter > render_samples)
+		throw "Rendered too much samples";
+
+	if (image_clasters.samples_counter == render_samples)
+	{
+		if (image_clasters.IsLast())
+		{
+			EndRender();
+			return true;
+		}
+
+		image_clasters.NextClaster();
+		update_preFrame(window_prop);
+	}
+	else
+	{
+		Vector2i pos = v2f_to_v2i(image_clasters.claster.getPosition());
+		Vector2i size = v2f_to_v2i(image_clasters.claster.getSize());
+		Texture window_dump;
+		window_dump.create(setup.w, setup.h);
+		window_dump.update(window);
+		window_prop.preFrame.loadFromImage(window_dump.copyToImage(), IntRect(pos, size));
+	}
 }
 
 void Render::set_uniforms(Shader& shader, const WindowProp& window_prop, const Ini& setup, const Camera& camera, const Texture& lol)

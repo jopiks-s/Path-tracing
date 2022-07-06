@@ -3,7 +3,6 @@
 
 WindowProp::WindowProp(int w, int h)
 {
-	preFrame.create(w, h);
 	if (w != 1920 || h != 1080)
 		resizable = false;
 }

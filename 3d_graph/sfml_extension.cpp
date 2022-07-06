@@ -35,3 +35,8 @@ string sf::TimeToString(const vector<int>& v, char delimiter, bool add_unit)
 
 	return output;
 }
+
+Vector2i sf::v2f_to_v2i(const Vector2f& vec)
+{
+	return Vector2i(vec.x, vec.y);
+}

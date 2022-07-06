@@ -25,7 +25,7 @@ int main()
 {
 	srand(time(NULL));
 
-	Render render(1, 256, 8, 256, 8, 32);
+	Render render(1, 256, 128, 256, 8, 32);
 	Ini setup(500, 500, Vector3f(0.5, 0.75, -0.35), "D:/Ainstall/render/");
 	WindowProp window_prop(setup.w, setup.h);
 	InfoOutput info_output("Arial.ttf", Color::White, true);
@@ -35,11 +35,6 @@ int main()
 	Shader shader;
 	if (!shader.loadFromFile("Shader.frag", Shader::Type::Fragment))
 		cout << "Can't load 'Shader.frag'\n";
-
-	////
-	RectangleShape filler(Vector2f(setup.w, setup.h));
-	filler.setFillColor(Color::Magenta);
-	////
 
 #pragma region window
 	RenderWindow window(VideoMode(setup.w, setup.h), "bebe", window_prop.resizable ? Style::Default : Style::Titlebar | Style::Close);
@@ -52,6 +47,7 @@ int main()
 		cout << "ERROR: LOAD SKY\n";
 	shader.setUniform("sky", sky);
 #pragma endregion
+	bool starter = false;
 
 	while (window.isOpen())
 	{
@@ -119,7 +115,7 @@ int main()
 						if (event.key.code == Keyboard::R)
 						{
 							cout << "Start render:\n";
-							render.StartRender(setup);
+							render.StartRender(setup, window_prop);
 							window_prop.render_elapsed_time.restart();
 							camera.Disable();
 							render_dump = ImageAccurate(setup.h, vector<Vector3<long double>>(setup.w, Vector3<long double>(0, 0, 0)));
@@ -134,44 +130,46 @@ int main()
 			}
 		}
 
+		/////////
+		if (!starter)
+		{
+			cout << "Start render:\n";
+			render.StartRender(setup, window_prop);
+			window_prop.render_elapsed_time.restart();
+			camera.Disable();
+			render_dump = ImageAccurate(setup.h, vector<Vector3<long double>>(setup.w, Vector3<long double>(0, 0, 0)));
+			starter = true;
+		}
+		/////////
+
 		camera.MoveCamera();
 
 		render.set_uniforms(shader, window_prop, setup, camera, sky);
+		bool finish_render = render.render_claster(window, shader, window_prop, setup);
 
-		//render.render_claster();
-		window.draw(filler, &shader);
-		window_prop.preFrame.update(window);
 
-		info_output.draw(window, setup, camera, render);
+		//info_output.draw(window, setup, camera, render);
+		//if (!window_prop.updated)
+		//{
+		//	draw_img(window, Graphic::VectorToImage(render_dump, setup));
+		//	info_output.draw_render_done(window, setup);
+		//}
 
-		if (!window_prop.updated)
+		if (finish_render || render.rendering)
 		{
-			draw_img(window, Graphic::VectorToImage(render_dump, setup));
-			info_output.draw_render_done(window, setup);
-		}
-
-		if (render.rendering)
-		{
-			if (!info_output.disable)
-				draw_img(window, Graphic::VectorToImage(render_dump, setup));
-
-			window_prop.render_frame += render.samples_per_frame;
-			info_output.draw_render(window, setup, window_prop.render_frame, window_prop.render_elapsed_time, render);
-
 			Graphic::RenderApproximate(render_dump, window_prop.preFrame.copyToImage(), setup, render);
 
-			if (window_prop.render_frame == render.render_samples)
+			if (finish_render)
 			{
 				render.save_result(render_dump, window_prop.render_elapsed_time, setup);
 
-				window_prop.render_frame = 0;
 				window_prop.fixed_frame_counter = 1;
-				if (!window_prop.focus)
-					window_prop.updated = false;
-				render.rendering = false;
+				window_prop.updated = window_prop.focus;
+
 				camera.Enable();
 			}
 		}
+		draw_img(window, Graphic::VectorToImage(render_dump, setup));
 
 		window.display();
 		window_prop.frame++;

@@ -47,13 +47,15 @@ Vector3f Graphic::Mix(const Vector3f& v1, const Vector3f& v2, const float& perce
 
 ImageAccurate Graphic::RenderApproximate(ImageAccurate& dump, const Image& image, const Ini& setup, const Render& render)
 {
-	for (int i = 0; i < setup.h; i++)
-		for (int j = 0; j < setup.w; j++)
+	auto size = image.getSize();
+	auto pos = render.image_clasters.claster.getPosition();
+	for (int y = 0; y < size.y; y++)
+		for (int x = 0; x < size.x; x++)
 		{
-			Color c = image.getPixel(j, i);
-			dump[i][j].x += (int(c.r) / (long double)render.render_samples) * render.samples_per_frame;
-			dump[i][j].y += (int(c.g) / (long double)render.render_samples) * render.samples_per_frame;
-			dump[i][j].z += (int(c.b) / (long double)render.render_samples) * render.samples_per_frame;
+			Color c = image.getPixel(x, y);
+			dump[y + pos.y][x + pos.x].x += (int(c.r) / (long double)render.render_samples) * render.samples_per_frame;
+			dump[y + pos.y][x + pos.x].y += (int(c.g) / (long double)render.render_samples) * render.samples_per_frame;
+			dump[y + pos.y][x + pos.x].z += (int(c.b) / (long double)render.render_samples) * render.samples_per_frame;
 		}
 
 	return dump;

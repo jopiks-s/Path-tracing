@@ -13,4 +13,6 @@ namespace sf
 
 	vector<int> FormatTime(const Time& t);
 	string TimeToString(const vector<int>& v, char delimiter = ':', bool add_unit = false);
+
+	Vector2i v2f_to_v2i(const Vector2f& vec);
 }

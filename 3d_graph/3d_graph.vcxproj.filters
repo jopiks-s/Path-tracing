@@ -77,7 +77,7 @@
     <ClCompile Include="WindowProp.cpp">
       <Filter>Исходные файлы\Scene\WindowProp</Filter>
     </ClCompile>
-    <ClCompile Include="ImageClaster.cpp">
+    <ClCompile Include="ImageClasters.cpp">
       <Filter>Исходные файлы\Scene\Render\ImageClaster</Filter>
     </ClCompile>
   </ItemGroup>
@@ -122,7 +122,7 @@
     <ClInclude Include="WindowProp.h">
       <Filter>Исходные файлы\Scene\WindowProp</Filter>
     </ClInclude>
-    <ClInclude Include="ImageClaster.h">
+    <ClInclude Include="ImageClasters.h">
       <Filter>Исходные файлы\Scene\Render\ImageClaster</Filter>
     </ClInclude>
   </ItemGroup>
