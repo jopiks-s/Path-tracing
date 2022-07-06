@@ -79,6 +79,7 @@ bool Render::render_claster(RenderWindow& window, const Shader& shader, WindowPr
 {
 	window.draw(image_clasters.claster, &shader);
 	image_clasters.samples_counter += samples_per_frame;
+	cout << "rendered [" << image_clasters.samples_counter << "]: " << image_clasters.samples_counter << "samples\n";
 
 	if (image_clasters.samples_counter > render_samples)
 		throw "Rendered too much samples";

@@ -167,6 +167,7 @@ int main()
 				window_prop.updated = window_prop.focus;
 
 				camera.Enable();
+				return 0;
 			}
 		}
 		draw_img(window, Graphic::VectorToImage(render_dump, setup));
