@@ -47,13 +47,27 @@ int main()
 		cout << "ERROR: LOAD SKY\n";
 	shader.setUniform("sky", sky);
 #pragma endregion
+
 	bool starter = false;
 
 	while (window.isOpen())
 	{
+		/////////
+		if (!starter)
+		{
+			cout << "Start render:\n";
+			render.StartRender(setup, window_prop);
+			window_prop.render_elapsed_time.restart();
+			camera.Disable();
+			render_dump = ImageAccurate(setup.h, vector<Vector3<long double>>(setup.w, Vector3<long double>(0, 0, 0)));
+
+			starter = true;
+		}
+		/////////
+
 		window_prop.fixed_frame_counter++;
 		Event event;
-		while (window.pollEvent(event))
+		/*while (window.pollEvent(event))
 		{
 			if (event.type == Event::Closed)
 				window.close();
@@ -128,25 +142,19 @@ int main()
 				if (camera.KeyboardInputRecord(event))
 					window_prop.fixed_frame_counter = 1;
 			}
-		}
-
-		/////////
-		if (!starter)
-		{
-			cout << "Start render:\n";
-			render.StartRender(setup, window_prop);
-			window_prop.render_elapsed_time.restart();
-			camera.Disable();
-			render_dump = ImageAccurate(setup.h, vector<Vector3<long double>>(setup.w, Vector3<long double>(0, 0, 0)));
-			starter = true;
-		}
-		/////////
-
+		}*/
 		camera.MoveCamera();
 
 		render.set_uniforms(shader, window_prop, setup, camera, sky);
 		bool finish_render = render.render_claster(window, shader, window_prop, setup);
 
+		if (window_prop.frame == 1)
+		{
+			Texture window_dump;
+			window_dump.create(setup.w, setup.h);
+			window_dump.update(window);
+			window_dump.copyToImage().saveToFile("D:/AInstall/beiii.png");
+		}
 
 		//info_output.draw(window, setup, camera, render);
 		//if (!window_prop.updated)
@@ -175,6 +183,7 @@ int main()
 		window.display();
 		window_prop.frame++;
 		window_prop.calculate_fps(window, "bebe");
+		cout << "frame: " << window_prop.frame<<'\n';
 	}
 
 	return 0;

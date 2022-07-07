@@ -72,19 +72,35 @@ void Render::EndRender()
 void Render::update_preFrame(WindowProp& window_prop)
 {
 	auto size = image_clasters.claster.getSize();
+	window_prop.preFrame = Texture();
 	window_prop.preFrame.create(size.x, size.y);
 }
 
 bool Render::render_claster(RenderWindow& window, const Shader& shader, WindowProp& window_prop, const Ini& setup)
 {
+	if (!rendering)
+		return false;
+
 	window.draw(image_clasters.claster, &shader);
 	image_clasters.samples_counter += samples_per_frame;
-	cout << "rendered [" << image_clasters.samples_counter << "]: " << image_clasters.samples_counter << "samples\n";
+	cout << "Rendered claster[" << image_clasters.claster_pointer << "]: " << image_clasters.samples_counter << "samples\n";
 
 	if (image_clasters.samples_counter > render_samples)
 		throw "Rendered too much samples";
 
-	if (image_clasters.samples_counter == render_samples)
+	if (image_clasters.samples_counter != render_samples)
+	{
+		Vector2i pos = v2f_to_v2i(image_clasters.claster.getPosition());
+		Vector2i size = v2f_to_v2i(image_clasters.claster.getSize());
+		Texture window_dump;
+		window_dump.create(setup.w, setup.h);
+		window_dump.update(window);
+		//window_dump.copyToImage().saveToFile("D:/AInstall/beiii.png");
+
+		window_prop.preFrame.loadFromImage(window_dump.copyToImage(), IntRect(pos, size));
+		//DON'T AFFECT ON RENDER_DUMP YET
+	}
+	else
 	{
 		if (image_clasters.IsLast())
 		{
@@ -93,17 +109,10 @@ bool Render::render_claster(RenderWindow& window, const Shader& shader, WindowPr
 		}
 
 		image_clasters.NextClaster();
+		//DON'T AFFECT ON RENDER_DUMP YET
 		update_preFrame(window_prop);
 	}
-	else
-	{
-		Vector2i pos = v2f_to_v2i(image_clasters.claster.getPosition());
-		Vector2i size = v2f_to_v2i(image_clasters.claster.getSize());
-		Texture window_dump;
-		window_dump.create(setup.w, setup.h);
-		window_dump.update(window);
-		window_prop.preFrame.loadFromImage(window_dump.copyToImage(), IntRect(pos, size));
-	}
+	return false;
 }
 
 void Render::set_uniforms(Shader& shader, const WindowProp& window_prop, const Ini& setup, const Camera& camera, const Texture& lol)
@@ -122,7 +131,7 @@ void Render::set_uniforms(Shader& shader, const WindowProp& window_prop, const I
 	shader.setUniform("camera_size", (float)camera.camera_size);
 
 	this->choose_samples_amount(window_prop);
-	shader.setUniform("render", this->rendering);
+	shader.setUniform("rendering", this->rendering);
 	shader.setUniform("samples", this->samples_per_frame);
 	shader.setUniform("sun_size", this->sun_size);
 	shader.setUniform("max_reflect", this->max_reflect);

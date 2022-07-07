@@ -5,7 +5,7 @@ float aspect_ratio = resolution.x / resolution.y;
 
 uniform int frame;
 uniform int fixed_frame_counter;
-uniform bool render;
+uniform bool rendering;
 
 uniform vec3 seeds[256];
 
@@ -328,7 +328,7 @@ void main()
 
 	vec3 curr_col = ToneMapping(MultiTrace(uv));
 
-	if (render)
+	if (rendering)
 		gl_FragColor = vec4(curr_col, 1);
 	else
 	{

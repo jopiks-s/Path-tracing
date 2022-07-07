@@ -31,13 +31,14 @@ void ImageClasters::create_clasters(const Render& render, const Ini& setup)
 	SelectClaster(0);
 }
 
-void ImageClasters::SelectClaster(int index = 0)
+void ImageClasters::SelectClaster(int index)
 {
 	if (index >= clasters_info.size())
 		throw "Index out of range";
 
 	auto pos = clasters_info[index][0];
 	auto size = clasters_info[index][1];
+
 	claster.setPosition(pos.x, pos.y);
 	claster.setSize(Vector2f(size.x, size.y));
 
