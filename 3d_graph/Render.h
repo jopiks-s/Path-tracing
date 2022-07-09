@@ -28,19 +28,23 @@ public:
 		MAX_CLASTER_SIZE;
 
 	ImageClasters image_clasters;
+	ImageAccurate render_dump;
 
 	bool rendering = false,
 		simplified = false;
 
-	Render(int viewport_samples, int render_samples, int MAX_SAMPLES_PER_FRAME, int MAX_CLASTER_SIZE, int sun_size, int max_reflect);
+	//
+	int ssaved = 0;
+	//
+
+	Render(int viewport_samples, int render_samples, int MAX_SAMPLES_PER_FRAME, int MAX_CLASTER_SIZE, int sun_size, int max_reflect, const Ini& setup);
 	void switch_image_quality();
 	void choose_samples_amount(const WindowProp& window_prop);
 
-	void StartRender(const Ini& setup, WindowProp& window_prop);
+	void StartRender(const Ini& setup);
 	void EndRender();
 	bool render_claster(RenderWindow& window, const Shader& shader, WindowProp& window_prop, const Ini& setup);
-	void update_preFrame(WindowProp& window_prop);
 
 	void set_uniforms(Shader& shader, const WindowProp& window_prop, const Ini& setup, const Camera& camera, const Texture& lol);
-	bool save_result(const ImageAccurate& render_dump, const Clock& render_elapsed_time, const Ini& setup);
+	bool save_result(const Clock& render_elapsed_time, const Ini& setup);
 };

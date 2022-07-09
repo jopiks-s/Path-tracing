@@ -27,7 +27,7 @@ uniform sampler2D sky;
 ///////////////////////////////////////////////
 
 const float PI = 3.14159265;
-const int object_amount = 15;
+const int object_amount = 11;
 
 int rand_counter = 0;
 int sample_pointer = 0;
@@ -101,8 +101,8 @@ vec3 Rotate(in vec3 v, in vec3 fi)
 
 vec3 ToneMapping(in vec3 col) 
 { 
-	float white = 16;
-	float exposure = 20;
+	float white = 10;
+	float exposure = 10;
 	col *= white * exposure;
 	col = (col * (1.0 + col / white / white)) / (1.0 + col);
 	return col;

@@ -25,20 +25,27 @@ int main()
 {
 	srand(time(NULL));
 
-	Render render(1, 256, 128, 256, 8, 32);
-	Ini setup(500, 500, Vector3f(0.5, 0.75, -0.35), "D:/Ainstall/render/");
+	int w = 500, h = 500,
+		viewport_samples = 1,
+		render_samples = 256, max_samples_per_frame = 128, max_claster_size = 64, sun_size = 8, max_reflect = 32;
+	double sensetivity = 0.5, camera_speed = 0.3, focal_length = 1, aperture = 620, camera_size = 1;
+	Vector3f light_dir(0.5, 0.75, -0.35),
+		camera_origin(-30, 0, 7.5), camera_rotation(0, -8, 0); //degrees
+	string render_path = "D:/AInstall/render/";
+
+	Ini setup(w, h, light_dir, render_path);
+	Render render(viewport_samples, render_samples, max_samples_per_frame, max_claster_size, sun_size, max_reflect, setup);
 	WindowProp window_prop(setup.w, setup.h);
 	InfoOutput info_output("Arial.ttf", Color::White, true);
-	Camera camera(0.5, 0.3, 1, 620, 1, Vector3f(-30,0,7.5), Vector3f(0,-8,0));
-	ImageAccurate render_dump(setup.h, vector<Vector3<long double>>(setup.w, Vector3<long double>(0, 0, 0)));
+	Camera camera(sensetivity, camera_speed, focal_length, aperture, camera_size, camera_origin, camera_rotation);
 
 	Shader shader;
-	if (!shader.loadFromFile("Shader.frag", Shader::Type::Fragment))
+	if (!shader.loadFromFile("shadertest.frag", Shader::Type::Fragment))
 		cout << "Can't load 'Shader.frag'\n";
 
 #pragma region window
 	RenderWindow window(VideoMode(setup.w, setup.h), "bebe", window_prop.resizable ? Style::Default : Style::Titlebar | Style::Close);
-	window.setFramerateLimit(120);
+	window.setFramerateLimit(1);
 #pragma endregion
 
 #pragma region sky
@@ -56,10 +63,9 @@ int main()
 		if (!starter)
 		{
 			cout << "Start render:\n";
-			render.StartRender(setup, window_prop);
+			render.StartRender(setup);
 			window_prop.render_elapsed_time.restart();
 			camera.Disable();
-			render_dump = ImageAccurate(setup.h, vector<Vector3<long double>>(setup.w, Vector3<long double>(0, 0, 0)));
 
 			starter = true;
 		}
@@ -67,7 +73,7 @@ int main()
 
 		window_prop.fixed_frame_counter++;
 		Event event;
-		/*while (window.pollEvent(event))
+		while (window.pollEvent(event))
 		{
 			if (event.type == Event::Closed)
 				window.close();
@@ -129,10 +135,9 @@ int main()
 						if (event.key.code == Keyboard::R)
 						{
 							cout << "Start render:\n";
-							render.StartRender(setup, window_prop);
+							render.StartRender(setup);
 							window_prop.render_elapsed_time.restart();
 							camera.Disable();
-							render_dump = ImageAccurate(setup.h, vector<Vector3<long double>>(setup.w, Vector3<long double>(0, 0, 0)));
 						}
 
 						if (event.key.code == Keyboard::Z)
@@ -142,7 +147,7 @@ int main()
 				if (camera.KeyboardInputRecord(event))
 					window_prop.fixed_frame_counter = 1;
 			}
-		}*/
+		}
 		camera.MoveCamera();
 
 		render.set_uniforms(shader, window_prop, setup, camera, sky);
@@ -163,28 +168,24 @@ int main()
 		//	info_output.draw_render_done(window, setup);
 		//}
 
-		if (finish_render || render.rendering)
+		if (finish_render)
 		{
-			Graphic::RenderApproximate(render_dump, window_prop.preFrame.copyToImage(), setup, render);
+			render.save_result(window_prop.render_elapsed_time, setup);
 
-			if (finish_render)
-			{
-				render.save_result(render_dump, window_prop.render_elapsed_time, setup);
+			window_prop.fixed_frame_counter = 1;
+			window_prop.updated = window_prop.focus;
 
-				window_prop.fixed_frame_counter = 1;
-				window_prop.updated = window_prop.focus;
-
-				camera.Enable();
-				return 0;
-			}
+			camera.Enable();
+			window.close();
 		}
-		draw_img(window, Graphic::VectorToImage(render_dump, setup));
+
+		draw_img(window, Graphic::VectorToImage(render.render_dump, setup));
 
 		window.display();
 		window_prop.frame++;
 		window_prop.calculate_fps(window, "bebe");
-		cout << "frame: " << window_prop.frame<<'\n';
+		cout << "frame: " << window_prop.frame << '\n';
 	}
 
-	return 0;
+	getchar();
 }

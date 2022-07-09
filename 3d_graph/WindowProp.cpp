@@ -5,6 +5,7 @@ WindowProp::WindowProp(int w, int h)
 {
 	if (w != 1920 || h != 1080)
 		resizable = false;
+	preFrame.create(w, h);
 }
 
 void WindowProp::calculate_fps(RenderWindow& window, string window_title)

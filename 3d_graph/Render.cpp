@@ -4,10 +4,11 @@
 #include "WindowProp.h"
 #include "Camera.h"
 
-Render::Render(int viewport_samples, int render_samples, int MAX_SAMPLES_PER_FRAME, int MAX_CLASTER_SIZE, int sun_size, int max_reflect)
+Render::Render(int viewport_samples, int render_samples, int MAX_SAMPLES_PER_FRAME, int MAX_CLASTER_SIZE, int sun_size, int max_reflect, const Ini& setup)
 	: viewport_samples(viewport_samples), render_samples(render_samples),
 	MAX_SAMPLES_PER_FRAME(MAX_SAMPLES_PER_FRAME > 256 ? 256 : MAX_SAMPLES_PER_FRAME),
 	MAX_CLASTER_SIZE(MAX_CLASTER_SIZE),
+	render_dump(setup.h, vector<Vector3<long double>>(setup.w, Vector3<long double>(0, 0, 0))),
 	sun_size(sun_size), max_reflect(max_reflect)
 {
 	if (MAX_SAMPLES_PER_FRAME > 256)
@@ -54,13 +55,13 @@ void Render::choose_samples_amount(const WindowProp& window_prop)
 		samples_per_frame = 1;
 }
 
-void Render::StartRender(const Ini& setup, WindowProp& window_prop)
+void Render::StartRender(const Ini& setup)
 {
 	if (simplified)
 		switch_image_quality();
 
 	image_clasters.create_clasters(*this, setup);
-	update_preFrame(window_prop);
+	render_dump = ImageAccurate(setup.h, vector<Vector3<long double>>(setup.w, Vector3<long double>(0, 0, 0)));
 	rendering = true;
 }
 
@@ -69,19 +70,16 @@ void Render::EndRender()
 	rendering = false;
 }
 
-void Render::update_preFrame(WindowProp& window_prop)
-{
-	auto size = image_clasters.claster.getSize();
-	window_prop.preFrame = Texture();
-	window_prop.preFrame.create(size.x, size.y);
-}
-
 bool Render::render_claster(RenderWindow& window, const Shader& shader, WindowProp& window_prop, const Ini& setup)
 {
 	if (!rendering)
 		return false;
 
 	window.draw(image_clasters.claster, &shader);
+	window_prop.preFrame.update(window);
+	Graphic::RenderApproximate(render_dump, window_prop.preFrame.copyToImage(), setup, *this);
+
+	//window.draw((&image_clasters)->claster, &shader);
 	image_clasters.samples_counter += samples_per_frame;
 	cout << "Rendered claster[" << image_clasters.claster_pointer << "]: " << image_clasters.samples_counter << "samples\n";
 
@@ -90,15 +88,11 @@ bool Render::render_claster(RenderWindow& window, const Shader& shader, WindowPr
 
 	if (image_clasters.samples_counter != render_samples)
 	{
-		Vector2i pos = v2f_to_v2i(image_clasters.claster.getPosition());
-		Vector2i size = v2f_to_v2i(image_clasters.claster.getSize());
-		Texture window_dump;
-		window_dump.create(setup.w, setup.h);
-		window_dump.update(window);
-		//window_dump.copyToImage().saveToFile("D:/AInstall/beiii.png");
-
-		window_prop.preFrame.loadFromImage(window_dump.copyToImage(), IntRect(pos, size));
-		//DON'T AFFECT ON RENDER_DUMP YET
+		if (ssaved == 0)
+		{
+			window_prop.preFrame.copyToImage().saveToFile("D:/AInstall/beiii.png");
+			ssaved++;
+		}
 	}
 	else
 	{
@@ -109,8 +103,6 @@ bool Render::render_claster(RenderWindow& window, const Shader& shader, WindowPr
 		}
 
 		image_clasters.NextClaster();
-		//DON'T AFFECT ON RENDER_DUMP YET
-		update_preFrame(window_prop);
 	}
 	return false;
 }
@@ -147,7 +139,7 @@ void Render::set_uniforms(Shader& shader, const WindowProp& window_prop, const I
 	shader.setUniformArray("seeds", &seeds[0], samples_per_frame);
 }
 
-bool Render::save_result(const ImageAccurate& render_dump, const Clock& render_elapsed_time, const Ini& setup)
+bool Render::save_result(const Clock& render_elapsed_time, const Ini& setup)
 {
 	auto elapsed_time = FormatTime(render_elapsed_time.getElapsedTime());
 	cout << "Render done!\n";
