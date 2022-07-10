@@ -78,6 +78,18 @@ Image Graphic::VectorToImage(const ImageAccurate& dump, const Ini& setup)
 	return img;
 }
 
+vector<Vector3f> Graphic::GenerateSeeds(int amount)
+{
+	vector<Vector3f> seeds(amount, Vector3f(0, 0, 0));
+	for (int i = 0; i < amount; i++)
+		seeds[i] = Vector3f(
+			(rand() % 100000),
+			(rand() % 100000),
+			(rand() % 100000)
+		);
+	return seeds;
+}
+
 Vector3f Graphic::ValueToAngle(const Vector3f& vec)
 {
 	return Vector3f((vec.x / 3.14) * 180, (vec.y / 3.14) * 180, (vec.z / 3.14) * 180);

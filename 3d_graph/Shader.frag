@@ -7,7 +7,8 @@ uniform int frame;
 uniform int fixed_frame_counter;
 uniform bool rendering;
 
-uniform vec3 seeds[516];
+const int MAX_SEEDS_AMOUNT = 512;
+uniform vec3 seeds[MAX_SEEDS_AMOUNT];
 
 uniform vec3 camera_origin;
 uniform vec3 camera_rotation;
@@ -311,7 +312,7 @@ vec3 MultiTrace(in vec2 uv)
 		vec3 rd = Rotate(vec3(focal_length, focus_coord) - matrix_origin, camera_rotation);
 
 		col += castRay(world_origin, rd, obj, uv);
-		sample_pointer++;
+		sample_pointer = (sample_pointer + 1) % MAX_SEEDS_AMOUNT;
 	}
 	return col / samples;
 }

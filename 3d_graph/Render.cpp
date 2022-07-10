@@ -6,16 +6,11 @@
 
 Render::Render(int viewport_samples, int render_samples, int MAX_SAMPLES_PER_FRAME, int MAX_CLASTER_SIZE, int sun_size, int max_reflect, const Ini& setup)
 	: viewport_samples(viewport_samples), render_samples(render_samples),
-	MAX_SAMPLES_PER_FRAME(MAX_SAMPLES_PER_FRAME > 516 ? 516 : MAX_SAMPLES_PER_FRAME),
+	MAX_SAMPLES_PER_FRAME(MAX_SAMPLES_PER_FRAME > render_samples ? render_samples : MAX_SAMPLES_PER_FRAME),
 	MAX_CLASTER_SIZE(MAX_CLASTER_SIZE),
 	render_dump(setup.h, vector<Vector3<long double>>(setup.w, Vector3<long double>(0, 0, 0))),
 	sun_size(sun_size), max_reflect(max_reflect)
-{
-	if (MAX_SAMPLES_PER_FRAME > 516)
-		cout << "GPU CAN'T HANDLE THIS SAMPLES PER FRAME: " << MAX_SAMPLES_PER_FRAME << '\n'
-		<< "SAMPLES_PER_FRAME SET TO 516 \n"
-		<< "To change max samples per frame on gpu go to 'Shader.frag', line: 10, and change array size \n";
-}
+{}
 
 void Render::switch_image_quality()
 {
@@ -122,15 +117,7 @@ void Render::set_uniforms(Shader& shader, const WindowProp& window_prop, const I
 	shader.setUniform("samples", this->samples_per_frame);
 	shader.setUniform("sun_size", this->sun_size);
 	shader.setUniform("max_reflect", this->max_reflect);
-
-	vector<Vector3f> seeds(samples_per_frame, Vector3f(0, 0, 0));
-	for (int i = 0; i < samples_per_frame; i++)
-		seeds[i] = Vector3f(
-			(rand() % 100000),
-			(rand() % 100000),
-			(rand() % 100000)
-		);
-
+	vector<Vector3f> seeds = Graphic::GenerateSeeds(MAX_SEEDS_AMOUNT);
 	shader.setUniformArray("seeds", &seeds[0], samples_per_frame);
 }
 

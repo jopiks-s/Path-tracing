@@ -27,7 +27,7 @@ int main()
 
 	int w = 1920, h = 1080,
 		viewport_samples = 1,
-		render_samples = 1024, max_samples_per_frame = 516, max_claster_size = 64, sun_size = 8, max_reflect = 32;
+		render_samples = 1024, max_samples_per_frame = 1024, max_claster_size = 64, sun_size = 8, max_reflect = 32;
 	double sensetivity = 0.5, camera_speed = 0.3, focal_length = 1, aperture = 620, camera_size = 1;
 	Vector3f light_dir(0.5, 0.75, -0.35),
 		camera_origin(-30, 0, 7.5), camera_rotation(0, -8, 0); //degrees

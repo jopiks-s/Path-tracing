@@ -25,7 +25,8 @@ public:
 		viewport_samples,
 		render_samples;
 	const int MAX_SAMPLES_PER_FRAME,
-		MAX_CLASTER_SIZE;
+		MAX_CLASTER_SIZE,
+		MAX_SEEDS_AMOUNT = 512;
 
 	ImageClasters image_clasters;
 	ImageAccurate render_dump;
