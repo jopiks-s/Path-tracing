@@ -113,12 +113,13 @@ void Render::set_uniforms(Shader& shader, const WindowProp& window_prop, const I
 	shader.setUniform("camera_size", (float)camera.camera_size);
 
 	this->choose_samples_amount(window_prop);
+	vector<Vector3f> seeds = Graphic::GenerateSeeds(min(samples_per_frame, MAX_SEEDS_AMOUNT));
+
 	shader.setUniform("rendering", this->rendering);
 	shader.setUniform("samples", this->samples_per_frame);
 	shader.setUniform("sun_size", this->sun_size);
 	shader.setUniform("max_reflect", this->max_reflect);
-	vector<Vector3f> seeds = Graphic::GenerateSeeds(MAX_SEEDS_AMOUNT);
-	shader.setUniformArray("seeds", &seeds[0], samples_per_frame);
+	shader.setUniformArray("seeds", &seeds[0], seeds.size());
 }
 
 bool Render::save_result(const Clock& render_elapsed_time, const Ini& setup)

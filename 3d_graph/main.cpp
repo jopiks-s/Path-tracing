@@ -27,7 +27,7 @@ int main()
 
 	int w = 1920, h = 1080,
 		viewport_samples = 1,
-		render_samples = 1024, max_samples_per_frame = 1024, max_claster_size = 64, sun_size = 8, max_reflect = 32;
+		render_samples = 1024, max_samples_per_frame = 256, max_claster_size = 256, sun_size = 8, max_reflect = 32;
 	double sensetivity = 0.5, camera_speed = 0.3, focal_length = 1, aperture = 620, camera_size = 1;
 	Vector3f light_dir(0.5, 0.75, -0.35),
 		camera_origin(-30, 0, 7.5), camera_rotation(0, -8, 0); //degrees
@@ -46,7 +46,7 @@ int main()
 
 #pragma region window
 	RenderWindow window(VideoMode(setup.w, setup.h), "bebe", window_prop.resizable ? Style::Default : Style::Titlebar | Style::Close);
-	window.setFramerateLimit(1);
+	window.setFramerateLimit(120);
 #pragma endregion
 
 #pragma region sky
@@ -125,7 +125,6 @@ int main()
 
 							render.StartRender(setup);
 							window_prop.render_elapsed_time.restart();
-							window_prop.disable_fullscrean(window, setup);
 							camera.Disable();
 						}
 

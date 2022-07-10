@@ -72,7 +72,7 @@ bool InfoOutput::draw_render(RenderWindow& window, const Ini& setup, const Clock
 
 	ostringstream output_str;
 	output_str <<
-		render.image_clasters.samples_counter << " sample--\n" <<
+		"Samples progress : " << render.image_clasters.samples_counter << " / " << render.render_samples << '\n' <<
 		"Samples per frame : " << render.samples_per_frame << "\n"
 		"Render progress : " << done_percent << "%\n"
 		"Elapsed time : " << time_str << "\n";
