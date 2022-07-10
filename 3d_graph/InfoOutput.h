@@ -20,10 +20,8 @@ public:
 	Font font;
 	Color font_color;
 
-	void Disable();
-	void Enable();
-	void Switch();
+	void Switch(RenderWindow& window);
 	bool draw(RenderWindow& window, const Ini& setup, const Camera& camera, const Render& render);
-	bool draw_render(RenderWindow& window, const Ini& setup, int sample, const Clock& elapsed_time, const Render& render);
+	bool draw_render(RenderWindow& window, const Ini& setup, const Clock& elapsed_time, const Render& render);
 	bool draw_render_done(RenderWindow& window, const Ini& setup);
 };

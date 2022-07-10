@@ -36,15 +36,11 @@ void Render::choose_samples_amount(const WindowProp& window_prop)
 		samples_per_frame = 1;
 	else if (rendering)
 	{
-		bool correct = false;
-		samples_per_frame = MAX_SAMPLES_PER_FRAME;
-		do
-		{
-			if (render_samples - image_clasters.samples_counter < samples_per_frame)
-				samples_per_frame /= 2;
-			else
-				correct = true;
-		} while (!correct);
+		int samples_left = render_samples - image_clasters.samples_counter;
+		if (samples_left > MAX_SAMPLES_PER_FRAME)
+			samples_per_frame = MAX_SAMPLES_PER_FRAME;
+		else
+			samples_per_frame = samples_left;
 	}
 	else if (window_prop.focus)
 		if (window_prop.fixed_frame_counter < 30)
@@ -81,7 +77,6 @@ bool Render::render_claster(RenderWindow& window, const Shader& shader, WindowPr
 
 	//window.draw((&image_clasters)->claster, &shader);
 	image_clasters.samples_counter += samples_per_frame;
-	cout << "Rendered claster[" << image_clasters.claster_pointer << "]: " << image_clasters.samples_counter << "samples\n";
 
 	if (image_clasters.samples_counter > render_samples)
 		throw "Rendered too much samples";

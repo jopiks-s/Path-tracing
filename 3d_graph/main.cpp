@@ -27,7 +27,7 @@ int main()
 
 	int w = 500, h = 500,
 		viewport_samples = 1,
-		render_samples = 256, max_samples_per_frame = 128, max_claster_size = 64, sun_size = 8, max_reflect = 32;
+		render_samples = 1024, max_samples_per_frame = 128, max_claster_size = 64, sun_size = 8, max_reflect = 32;
 	double sensetivity = 0.5, camera_speed = 0.3, focal_length = 1, aperture = 620, camera_size = 1;
 	Vector3f light_dir(0.5, 0.75, -0.35),
 		camera_origin(-30, 0, 7.5), camera_rotation(0, -8, 0); //degrees
@@ -42,6 +42,7 @@ int main()
 	Shader shader;
 	if (!shader.loadFromFile("shadertest.frag", Shader::Type::Fragment))
 		cout << "Can't load 'Shader.frag'\n";
+	RectangleShape raw_filler(Vector2f(setup.w, setup.h));
 
 #pragma region window
 	RenderWindow window(VideoMode(setup.w, setup.h), "bebe", window_prop.resizable ? Style::Default : Style::Titlebar | Style::Close);
@@ -55,22 +56,8 @@ int main()
 	shader.setUniform("sky", sky);
 #pragma endregion
 
-	bool starter = false;
-
 	while (window.isOpen())
 	{
-		/////////
-		if (!starter)
-		{
-			cout << "Start render:\n";
-			render.StartRender(setup);
-			window_prop.render_elapsed_time.restart();
-			camera.Disable();
-
-			starter = true;
-		}
-		/////////
-
 		window_prop.fixed_frame_counter++;
 		Event event;
 		while (window.pollEvent(event))
@@ -86,8 +73,7 @@ int main()
 
 				window.setMouseCursorVisible(true);
 			}
-			if (event.type == Event::MouseButtonPressed ||
-				event.type == Event::GainedFocus)
+			if (event.type == Event::MouseButtonPressed)
 			{
 				window_prop.focus = true;
 				window_prop.updated = true;
@@ -128,7 +114,7 @@ int main()
 					}
 
 					if (event.key.code == Keyboard::I)
-						info_output.Switch();
+						info_output.Switch(window);
 
 					if (!render.rendering)
 					{
@@ -151,40 +137,40 @@ int main()
 		camera.MoveCamera();
 
 		render.set_uniforms(shader, window_prop, setup, camera, sky);
-		bool finish_render = render.render_claster(window, shader, window_prop, setup);
 
-		if (window_prop.frame == 1)
+		if (render.rendering)
 		{
-			Texture window_dump;
-			window_dump.create(setup.w, setup.h);
-			window_dump.update(window);
-			window_dump.copyToImage().saveToFile("D:/AInstall/beiii.png");
+			if (render.render_claster(window, shader, window_prop, setup))
+			{
+				render.save_result(window_prop.render_elapsed_time, setup);
+
+				window_prop.fixed_frame_counter = 1;
+				window_prop.updated = window_prop.focus;
+
+				camera.Enable();
+			}
+			if (!info_output.disable)
+				draw_img(window, Graphic::VectorToImage(render.render_dump, setup));
+		}
+		else
+		{
+			if (!window_prop.updated)
+			{
+				draw_img(window, Graphic::VectorToImage(render.render_dump, setup));
+				info_output.draw_render_done(window, setup);
+			}
+			else
+				window.draw(raw_filler, &shader);
+
+			window_prop.preFrame.update(window);
 		}
 
-		//info_output.draw(window, setup, camera, render);
-		//if (!window_prop.updated)
-		//{
-		//	draw_img(window, Graphic::VectorToImage(render_dump, setup));
-		//	info_output.draw_render_done(window, setup);
-		//}
-
-		if (finish_render)
-		{
-			render.save_result(window_prop.render_elapsed_time, setup);
-
-			window_prop.fixed_frame_counter = 1;
-			window_prop.updated = window_prop.focus;
-
-			camera.Enable();
-			window.close();
-		}
-
-		draw_img(window, Graphic::VectorToImage(render.render_dump, setup));
+		info_output.draw(window, setup, camera, render);
+		info_output.draw_render(window, setup, window_prop.render_elapsed_time, render);
 
 		window.display();
 		window_prop.frame++;
 		window_prop.calculate_fps(window, "bebe");
-		cout << "frame: " << window_prop.frame << '\n';
 	}
 
 	getchar();

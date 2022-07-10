@@ -126,4 +126,9 @@
       <Filter>Исходные файлы\Scene\Render\ImageClaster</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\todo.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
+  </ItemGroup>
 </Project>

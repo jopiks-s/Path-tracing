@@ -313,7 +313,8 @@ vec3 MultiTrace(in vec2 uv)
 						   *
 						   (focal_length / aperture);
 
-		vec3 rd = Rotate(vec3(focal_length, focus_coord) - matrix_origin, camera_rotation);
+		vec3 rd = Rotate(vec3(focal_length, 0, camera_size / 2) - matrix_origin, camera_rotation);
+		//rd = 
 
 		col += castRay(world_origin, rd, obj, uv);
 		sample_pointer++;

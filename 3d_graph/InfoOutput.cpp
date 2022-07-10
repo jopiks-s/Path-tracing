@@ -16,19 +16,11 @@ InfoOutput::InfoOutput(string font_path, Color font_color, bool disable) : font_
 	}
 }
 
-void InfoOutput::Disable()
-{
-	disable = true;
-}
-
-void InfoOutput::Enable()
-{
-	disable = false;
-}
-
-void InfoOutput::Switch()
+void InfoOutput::Switch(RenderWindow& window)
 {
 	disable = !disable;
+	if (disable)
+		window.clear();
 }
 
 bool InfoOutput::draw(RenderWindow& window, const Ini& setup, const Camera& camera, const Render& render)
@@ -70,18 +62,22 @@ bool InfoOutput::draw(RenderWindow& window, const Ini& setup, const Camera& came
 	return true;
 }
 
-bool InfoOutput::draw_render(RenderWindow& window, const Ini& setup, int sample, const Clock& elapsed_time, const Render& render)
+bool InfoOutput::draw_render(RenderWindow& window, const Ini& setup, const Clock& elapsed_time, const Render& render)
 {
 	if (disable)
 		return false;
+	if (!render.rendering)
+		return false;
 
 	auto time_str = TimeToString(FormatTime(elapsed_time.getElapsedTime()));
+	int done_percent = round(((float)render.image_clasters.claster_pointer / render.image_clasters.clasters_info.size()) * 100);
 
 	ostringstream output_str;
 	output_str <<
-		sample << " sample--\n" <<
-		"Elapsed time : " << time_str << "\n" <<
-		"Claster size : " << render.samples_per_frame << "\n";
+		render.image_clasters.samples_counter << " sample--\n" <<
+		"Samples per frame : " << render.samples_per_frame << "\n"
+		"Render progress : " << done_percent << "%\n"
+		"Elapsed time : " << time_str << "\n";
 	cout << output_str.str();
 	Text render_t;
 	render_t.setCharacterSize(24);
