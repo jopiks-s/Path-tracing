@@ -25,9 +25,9 @@ int main()
 {
 	srand(time(NULL));
 
-	int w = 500, h = 500,
+	int w = 1920, h = 1080,
 		viewport_samples = 1,
-		render_samples = 1024, max_samples_per_frame = 128, max_claster_size = 64, sun_size = 8, max_reflect = 32;
+		render_samples = 1024, max_samples_per_frame = 516, max_claster_size = 64, sun_size = 8, max_reflect = 32;
 	double sensetivity = 0.5, camera_speed = 0.3, focal_length = 1, aperture = 620, camera_size = 1;
 	Vector3f light_dir(0.5, 0.75, -0.35),
 		camera_origin(-30, 0, 7.5), camera_rotation(0, -8, 0); //degrees
@@ -40,7 +40,7 @@ int main()
 	Camera camera(sensetivity, camera_speed, focal_length, aperture, camera_size, camera_origin, camera_rotation);
 
 	Shader shader;
-	if (!shader.loadFromFile("shadertest.frag", Shader::Type::Fragment))
+	if (!shader.loadFromFile("Shader.frag", Shader::Type::Fragment))
 		cout << "Can't load 'Shader.frag'\n";
 	RectangleShape raw_filler(Vector2f(setup.w, setup.h));
 
@@ -58,6 +58,7 @@ int main()
 
 	while (window.isOpen())
 	{
+		window.clear();
 		window_prop.fixed_frame_counter++;
 		Event event;
 		while (window.pollEvent(event))
@@ -121,8 +122,10 @@ int main()
 						if (event.key.code == Keyboard::R)
 						{
 							cout << "Start render:\n";
+
 							render.StartRender(setup);
 							window_prop.render_elapsed_time.restart();
+							window_prop.disable_fullscrean(window, setup);
 							camera.Disable();
 						}
 
@@ -173,5 +176,6 @@ int main()
 		window_prop.calculate_fps(window, "bebe");
 	}
 
+	return 0;
 	getchar();
 }

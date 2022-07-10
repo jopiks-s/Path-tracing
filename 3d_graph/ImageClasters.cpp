@@ -17,6 +17,7 @@ void ImageClasters::create_clasters(const Render& render, const Ini& setup)
 	clasters_info = vector<vector<Vector2i>>(width_counter * height_counter, vector<Vector2i>(2, Vector2i()));
 
 	for (int y = 0; y < height_counter; y++)
+	{
 		for (int x = 0; x < width_counter; x++)
 		{
 			Vector2i block_position = Vector2i(x * max_claster, y * max_claster);
@@ -25,9 +26,10 @@ void ImageClasters::create_clasters(const Render& render, const Ini& setup)
 				x + 1 != width_counter ? max_claster : setup.w - (width_counter - 1) * max_claster,
 				y + 1 != height_counter ? max_claster : setup.h - (height_counter - 1) * max_claster
 			);
-			clasters_info[y * height_counter + x][0] = block_position;
-			clasters_info[y * height_counter + x][1] = block_size;
+			clasters_info[y * width_counter + x][0] = block_position;
+			clasters_info[y * width_counter + x][1] = block_size;
 		}
+	}
 	SelectClaster(0);
 }
 

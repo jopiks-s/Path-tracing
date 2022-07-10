@@ -19,8 +19,6 @@ InfoOutput::InfoOutput(string font_path, Color font_color, bool disable) : font_
 void InfoOutput::Switch(RenderWindow& window)
 {
 	disable = !disable;
-	if (disable)
-		window.clear();
 }
 
 bool InfoOutput::draw(RenderWindow& window, const Ini& setup, const Camera& camera, const Render& render)

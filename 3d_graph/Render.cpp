@@ -6,14 +6,14 @@
 
 Render::Render(int viewport_samples, int render_samples, int MAX_SAMPLES_PER_FRAME, int MAX_CLASTER_SIZE, int sun_size, int max_reflect, const Ini& setup)
 	: viewport_samples(viewport_samples), render_samples(render_samples),
-	MAX_SAMPLES_PER_FRAME(MAX_SAMPLES_PER_FRAME > 256 ? 256 : MAX_SAMPLES_PER_FRAME),
+	MAX_SAMPLES_PER_FRAME(MAX_SAMPLES_PER_FRAME > 516 ? 516 : MAX_SAMPLES_PER_FRAME),
 	MAX_CLASTER_SIZE(MAX_CLASTER_SIZE),
 	render_dump(setup.h, vector<Vector3<long double>>(setup.w, Vector3<long double>(0, 0, 0))),
 	sun_size(sun_size), max_reflect(max_reflect)
 {
-	if (MAX_SAMPLES_PER_FRAME > 256)
+	if (MAX_SAMPLES_PER_FRAME > 516)
 		cout << "GPU CAN'T HANDLE THIS SAMPLES PER FRAME: " << MAX_SAMPLES_PER_FRAME << '\n'
-		<< "SAMPLES_PER_FRAME SET TO 256 \n"
+		<< "SAMPLES_PER_FRAME SET TO 516 \n"
 		<< "To change max samples per frame on gpu go to 'Shader.frag', line: 10, and change array size \n";
 }
 
