@@ -1,3 +1,4 @@
+![4096_10m_8s_36ms](https://user-images.githubusercontent.com/73075720/178336645-cbeb511e-d3c0-475d-b48c-edc522236897.png)
 # Path-tracing
 
 This is a project for the implementation of a type of computer graphics - path tracing.
