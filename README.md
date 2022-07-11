@@ -1,4 +1,3 @@
-![4096_10m_8s_36ms](https://user-images.githubusercontent.com/73075720/178336645-cbeb511e-d3c0-475d-b48c-edc522236897.png)
 # Path-tracing
 
 This is a project for the implementation of a type of computer graphics - path tracing.
@@ -55,4 +54,4 @@ int w = 1920, h = 1080,
 
 If the number is set too high for ```max_samples_per_frame``` or ```max_claster_size```, rendering of one frame takes too long and the program crashes by the driver/OS. Therefore, if the program stops working, try reducing these numbers.
 
-[](./render/4096_10m_8s_36ms.png)
+![](./render/4096_10m_8s_36ms.png)
