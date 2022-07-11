@@ -5,11 +5,20 @@ The program has a camera object that controls POV, and primitives directly with 
 
 # Suported primitives 📐
 
-```
+```c++
 int object_type;
+/*
 0. sphere
 1. box
 2. plane
+*/
 ```
 # Suported materials
 ```c++
+int type;
+/*
+0. default
+1. lamp
+*/
+
+```
