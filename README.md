@@ -5,7 +5,7 @@ The program has a camera object that controls POV, and primitives directly with 
 
 # Primitives
 
-'''c++
+```c++
 int object_type;
 	// 0 - sphere, 1 - box, 2 - plane
-'''
+```
