@@ -30,7 +30,7 @@ float Refraction; // refraction property of object
 ```
 
 # Movement ⌨️
-- ``` W,A,S,D LShift, SPACE``` - move camera
+- ``` W ``` ```A``` ```S``` ```D``` ```LShift``` ```SPACE``` - move camera
 - ``` 1 ```, ``` 2 ``` - increase/decrease aperture
 - ``` Sroll Up/Down ``` - increase/decrease focal length
 - ``` R ``` - start render
