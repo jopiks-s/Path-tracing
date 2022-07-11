@@ -31,3 +31,8 @@ float Refraction; // refraction property of object
 
 # Movement
 - ``` W,A,S,D ``` - move camera
+- - ``` R ``` - start render
+- ``` I ``` - enable/disable information output
+- ``` Z ``` - simplify image quality
+- ``` ESC ``` - detach program
+- ``` ENTER ``` - enable fullscrean (works only if your window size is 1920x1080)
