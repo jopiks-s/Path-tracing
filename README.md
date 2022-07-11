@@ -49,5 +49,7 @@ int w = 1920, h = 1080,
 		camera_origin(-30, 0, 7.5), camera_rotation(0, -8, 0); //input in degrees
 	string render_path = "D:/AInstall/render/"; // it is important to establish an existing path 0_0
 ```
+
 **IMPORTANT** ⚠️
+
 If the number is set too high for ```max_samples_per_frame``` or ```max_claster_size```, rendering of one frame takes too long and the program crashes by the driver/OS. Therefore, if the program stops working, try reducing these numbers.
