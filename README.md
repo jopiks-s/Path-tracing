@@ -29,10 +29,23 @@ float Specular;   // shows how likely ray will reflect, instead of refract (affe
 float Refraction; // refraction property of object
 ```
 
-# Movement
+# Movement ⌨️
 - ``` W,A,S,D ``` - move camera
-- - ``` R ``` - start render
+- ``` R ``` - start render
 - ``` I ``` - enable/disable information output
 - ``` Z ``` - simplify image quality
 - ``` ESC ``` - detach program
-- ``` ENTER ``` - enable fullscrean (works only if your window size is 1920x1080)
+- ``` ENTER ``` - enable fullscreen (works only if your window size is 1920x1080)
+
+# Settings option
+```c++
+int w = 1920, h = 1080,
+		viewport_samples = 1, render_samples = 4096,
+    max_samples_per_frame = 256, // responsible for how many samples at a time gpu will render
+    max_claster_size = 256, // responsible for what area of a screen at a time gpu will render
+    sun_size = 8, max_reflect = 32;
+	double sensetivity = 0.5, camera_speed = 0.3, focal_length = 1, aperture = 620, camera_size = 1;
+	Vector3f light_dir(0.5, 0.75, -0.35),
+		camera_origin(-30, 0, 7.5), camera_rotation(0, -8, 0); //input in degrees
+	string render_path = "D:/AInstall/render/"; // it is important to establish an existing path 0_0
+```
